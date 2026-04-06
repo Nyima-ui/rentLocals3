@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Syne, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const syne = Syne({
   variable: "--font-syne",
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -63,7 +63,7 @@ const Category = () => {
 
         {seedCategories.map((catx) => (
           <li key={catx}>
-            <button className="cursor-pointer font-medium hover:opacity-75 transition-opacity duration-150 border border-primary-100 rounded-md px-[6px] py-[3px] text-sm whitespace-nowrap">
+            <button className="cursor-pointer font-medium hover:opacity-75 transition-opacity duration-150 border border-primary-100 rounded-md px-[8px] py-[3px] text-sm whitespace-nowrap">
               {catx}
             </button>
           </li>
