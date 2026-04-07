@@ -2,12 +2,23 @@
 import Link from "next/link";
 import Image from "next/image";
 import CtaButton from "./CtaButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
 
 const Navbar = () => {
   const [isDropDownOpened, setisDropDownOpened] = useState(false);
+  const [isMobileMenuOpened, setisMobileMenuOpened] = useState(false);
+
+  useEffect(() => {
+    if (isMobileMenuOpened) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+  }, [isMobileMenuOpened]);
   return (
-    <header className="shadow-nav">
+    <header className="shadow-nav relative">
       {/* DESKTOP  */}
       <nav className="px-[80px] max-lg:px-[40px] max-sm:px-[20px] w-full mx-auto flex justify-between items-center py-[10px] max-md:hidden">
         <Link href="/">
@@ -73,7 +84,7 @@ const Navbar = () => {
       </nav>
 
       {/* MOBILE  */}
-      <nav className="border max-lg:px-[40px] max-sm:px-[20px] hidden max-md:block">
+      <nav className="max-lg:px-[40px] max-sm:px-[20px] hidden max-md:flex py-[12px] rounded-md border border-primary-200/40 items-center justify-between fixed top-0 left-0 w-full bg-bg-main z-30">
         <Link href="/">
           <Image
             height={32}
@@ -83,7 +94,65 @@ const Navbar = () => {
             loading="eager"
           />
         </Link>
+
+        <div
+          className="h-[16px] relative  border-red-600"
+          onClick={() => setisMobileMenuOpened((prev) => !prev)}
+        >
+          <Link
+            href="/"
+            className={cn(`block w-[26px] h-[16px]
+           after:content-[''] after:absolute after:top-full after:h-0 after:border-b-3 after:border-text after:w-full after:left-0 after:right-0 after:transition-all after:ease-out after:duration-300 after:rounded-md ${isMobileMenuOpened && `after:-rotate-45 afer:origin-center after:top-1/2`}
+           
+           before:content-[''] before:absolute before:top-0 before:h-0 before:border-b-3 before:border-text before:w-full beforer:left-0 before:right-0 before:transition-all before:ease-out before:duration-300 before:rounded-md ${isMobileMenuOpened && `before:rotate-45 before:origin-center before:top-1/2`}`)}
+          >
+            <i
+              className={cn(
+                `block indent-[100%] whitespace-nowrap overflow-hidden h-[2.5px] bg-text w-full absolute top-1/2 transition-transform ease-out duration-100 rounded-md ${isMobileMenuOpened && `opacity-0`}`,
+              )}
+            >
+              Menu
+            </i>
+          </Link>
+        </div>
       </nav>
+      <div
+        className={cn(
+          `fixed bg-bg-main top-0 right-0 w-full h-screen transition-transform duration-200 z-20 hidden max-md:flex max-md:flex-col max-md:justify-between px-[20px] pb-[54px] ${isMobileMenuOpened ? `translate-y-0` : `-translate-y-full`}`,
+        )}
+      >
+        <ul className="mt-[90px]">
+          <li className="py-[16px] border-b-2 border-primary-200/50 hover:bg-primary-100">
+            <Link href="#" className="flex items-center justify-between">
+              <span className="text-[22px]">My listings</span>
+              <ChevronRight size={22} />
+            </Link>
+          </li>
+          <li className="py-[16px] border-b-2 border-primary-200/50 hover:bg-primary-100">
+            <Link href="#" className="flex items-center justify-between">
+              <span className="text-[22px]">My bookings</span>
+              <ChevronRight size={22} />
+            </Link>
+          </li>
+          <li className="py-[16px] border-b-2 border-primary-200/50 hover:bg-primary-100">
+            <Link href="#" className="flex items-center justify-between">
+              <span className="text-[22px]">My rentals</span>
+              <ChevronRight size={22} />
+            </Link>
+          </li>
+          <li className="py-[16px] border-b-2 border-primary-200/50 hover:bg-primary-100">
+            <Link href="#" className="flex items-center justify-between">
+              <span className="text-[22px]">Profile</span>
+              <ChevronRight size={22} />
+            </Link>
+          </li>
+        </ul>
+
+        <div>
+           <CtaButton text="List your item" className="w-full py-[12px] text-base" />
+           <CtaButton text="logout" className="bg-transparent text-text border border-primary-200 w-full mt-[20px] py-[12px]"/>
+        </div>
+      </div>
     </header>
   );
 };
