@@ -68,12 +68,12 @@ const seedCardData = [
 const ListingsGrid = () => {
   return (
     <section className="mt-[32px]">
-      <ul className="grid grid-cols-5 gap-x-[15px] gap-y-[24px] max-xl:grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2">
+      <ul className="grid grid-cols-5 gap-x-[15px] gap-y-[24px] max-xl:grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
         {seedCardData.map((item) => (
           <li key={item.id}>
             <Link href={"/listings"}>
               <article className="rounded-md overflow-hidden bg-primary-100 p-[4px]">
-                <div className="h-[244px] max-xl:h-[220px] max-lg:h-[210px] overflow-hidden rounded-md">
+                <div className="h-[244px] max-xl:h-[220px] max-lg:h-[210px] max-sm:h-[300px] overflow-hidden rounded-md">
                   <Image
                     height={244}
                     width={244}

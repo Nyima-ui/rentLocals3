@@ -20,7 +20,10 @@ const Navbar = () => {
   return (
     <header className="shadow-nav relative">
       {/* DESKTOP  */}
-      <nav className="px-[80px] max-lg:px-[40px] max-sm:px-[20px] w-full mx-auto flex justify-between items-center py-[10px] max-md:hidden">
+      <nav
+        className="px-[80px] max-lg:px-[40px] max-sm:px-[20px] w-full mx-auto flex justify-between items-center py-[10px] max-md:hidden"
+        aria-label="Desktop navigation"
+      >
         <Link href="/">
           <Image
             height={32}
@@ -58,6 +61,8 @@ const Navbar = () => {
               className="rounded-full overflow-hidden size-[40px] cursor-pointer"
               aria-label="View profile"
               onClick={() => setisDropDownOpened((prev) => !prev)}
+              aria-expanded={isDropDownOpened}
+              aria-haspopup="true"
             >
               <Image
                 height={41}
@@ -68,7 +73,7 @@ const Navbar = () => {
               ></Image>
             </button>
             {isDropDownOpened && (
-              <ul className="absolute top-full right-0 w-[115px] bg-primary-100 py-[8px] rounded-md shadow-card translate-y-2">
+              <ul className="absolute top-full right-0 w-[115px] bg-primary-100 py-[8px] rounded-md shadow-sm shadow-text/60  translate-y-2">
                 <li className="px-[8px] hover:bg-primary-200">
                   <Link href="/">Profile</Link>
                 </li>
@@ -99,9 +104,8 @@ const Navbar = () => {
           className="h-[16px] relative  border-red-600"
           onClick={() => setisMobileMenuOpened((prev) => !prev)}
         >
-          <Link
-            href="/"
-            className={cn(`block w-[26px] h-[16px]
+          <button
+            className={cn(`block w-[26px] h-[16px] cursor-pointer
            after:content-[''] after:absolute after:top-full after:h-0 after:border-b-3 after:border-text after:w-full after:left-0 after:right-0 after:transition-all after:ease-out after:duration-300 after:rounded-md ${isMobileMenuOpened && `after:-rotate-45 afer:origin-center after:top-1/2`}
            
            before:content-[''] before:absolute before:top-0 before:h-0 before:border-b-3 before:border-text before:w-full beforer:left-0 before:right-0 before:transition-all before:ease-out before:duration-300 before:rounded-md ${isMobileMenuOpened && `before:rotate-45 before:origin-center before:top-1/2`}`)}
@@ -113,46 +117,54 @@ const Navbar = () => {
             >
               Menu
             </i>
-          </Link>
+          </button>
         </div>
       </nav>
-      <div
+      
+      <nav
+        aria-label="Mobile navigation"
         className={cn(
           `fixed bg-bg-main top-0 right-0 w-full h-screen transition-transform duration-200 z-20 hidden max-md:flex max-md:flex-col max-md:justify-between px-[20px] pb-[54px] ${isMobileMenuOpened ? `translate-y-0` : `-translate-y-full`}`,
         )}
       >
         <ul className="mt-[90px]">
-          <li className="py-[16px] border-b-2 border-primary-200/50 hover:bg-primary-100">
+          <li className="py-[12px] border-b-2 border-primary-200/50 hover:bg-primary-100">
             <Link href="#" className="flex items-center justify-between">
-              <span className="text-[22px]">My listings</span>
+              <span className="text-[19px]">My listings</span>
               <ChevronRight size={22} />
             </Link>
           </li>
-          <li className="py-[16px] border-b-2 border-primary-200/50 hover:bg-primary-100">
+          <li className="py-[12px] border-b-2 border-primary-200/50 hover:bg-primary-100">
             <Link href="#" className="flex items-center justify-between">
-              <span className="text-[22px]">My bookings</span>
+              <span className="text-[19px]">My bookings</span>
               <ChevronRight size={22} />
             </Link>
           </li>
-          <li className="py-[16px] border-b-2 border-primary-200/50 hover:bg-primary-100">
+          <li className="py-[12px] border-b-2 border-primary-200/50 hover:bg-primary-100">
             <Link href="#" className="flex items-center justify-between">
-              <span className="text-[22px]">My rentals</span>
+              <span className="text-[19px]">My rentals</span>
               <ChevronRight size={22} />
             </Link>
           </li>
-          <li className="py-[16px] border-b-2 border-primary-200/50 hover:bg-primary-100">
+          <li className="py-[12px] border-b-2 border-primary-200/50 hover:bg-primary-100">
             <Link href="#" className="flex items-center justify-between">
-              <span className="text-[22px]">Profile</span>
+              <span className="text-[19px]">Profile</span>
               <ChevronRight size={22} />
             </Link>
           </li>
         </ul>
 
         <div>
-           <CtaButton text="List your item" className="w-full py-[12px] text-base" />
-           <CtaButton text="logout" className="bg-transparent text-text border border-primary-200 w-full mt-[20px] py-[12px]"/>
+          <CtaButton
+            text="List your item"
+            className="w-full py-[12px] text-base"
+          />
+          <CtaButton
+            text="Logout"
+            className="bg-transparent text-text border border-primary-200 w-full mt-[20px] py-[12px] text-base"
+          />
         </div>
-      </div>
+      </nav>
     </header>
   );
 };

@@ -10,7 +10,7 @@ export default function Home() {
         className="h-[184px] mt-[40px] bg-[url('/hero-bg.png')] flex justify-center items-end bg-cover bg-center"
         aria-label="hero"
       >
-        <h1 className="text-[47px] font-syne max-sm:text-[33px] max-lg:leading-10 text-center font-medium">
+        <h1 className="text-[47px] font-syne max-sm:text-[33px] max-lg:leading-tight text-center font-medium">
           Your neighbors have what you need.
         </h1>
       </section>
