@@ -53,7 +53,10 @@ export async function updateSession(request: NextRequest) {
   //     pathname.startsWith("/api/seed/listing") ||
   //     (pathname.startsWith("/listing") && pathname !== "/listing/new");
 
-  const isPublicRoute = pathname === "/" || pathname.startsWith("/signup");
+  const isPublicRoute =
+    pathname === "/" ||
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/api/seed/listing");
 
   if (!user && !isPublicRoute) {
     // no user, potentially respond by redirecting the user to the login page
