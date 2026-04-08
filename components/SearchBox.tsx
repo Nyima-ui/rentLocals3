@@ -160,7 +160,7 @@ const SearchBox = () => {
       </form>
       {/* MOBILE SEARCH BOX  */}
       {isMobileSearchOpen && (
-        <div className="fixed bg-bg-main top-0 right-0 z-40 w-full h-screen px-[20px] pt-[88px] hidden max-md:flex max-md:flex-col">
+        <div className="fixed bg-bg-main top-0 right-0 z-40 w-full h-screen px-[20px] pt-[48px] hidden max-md:flex max-md:flex-col">
           <form className="relative focus-within:outline-2 focus-within:outline-primary rounded-md shadow-sm shadow-primary-200">
             <label htmlFor="mobile-search-query" className="sr-only">
               Search query for smaller devices
@@ -184,33 +184,36 @@ const SearchBox = () => {
             </button>
           </form>
 
-          {query && results.length > 0 ? (
-            <div
-              className="bg-primary-100 mt-[8px] rounded-md p-3 shadow-sm shadow-primary-200"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Search"
-            >
-              <p className="font-medium text-[19px]">Top matches</p>
-              <ul className="mt-[20px]">
-                {results.map((result) => (
-                  <li
-                    key={result.id}
-                    className="rounded-[2.5px] flex items-center justify-between hover:bg-primary-200"
-                  >
-                    <Link
-                      href="/"
-                      className="py-3 pl-5 block rounded-md w-full text-lg whitespace-nowrap line-clamp-1"
+          {query ? (
+            results.length > 0 && (
+              <div
+                className="bg-primary-100 mt-[8px] rounded-md p-3 shadow-sm shadow-primary-200"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Search"
+              >
+                <p className="font-medium text-[19px]">Top matches</p>
+                <ul className="mt-[20px]">
+                  {results.map((result) => (
+                    <li
+                      key={result.id}
+                      className="rounded-[2.5px] flex items-center justify-between hover:bg-primary-200"
+                      onClick={() => setQuery(result.title)}
                     >
-                      {result.title}
-                    </Link>
-                    <span>
-                      <ChevronRight size={22} />
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                      <Link
+                        href="/"
+                        className="py-3 pl-5 block rounded-md w-full text-lg whitespace-nowrap line-clamp-1"
+                      >
+                        {result.title}
+                      </Link>
+                      <span>
+                        <ChevronRight size={22} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
           ) : (
             <div
               className="bg-primary-100 mt-[8px] rounded-md p-3 shadow-sm shadow-primary-200"

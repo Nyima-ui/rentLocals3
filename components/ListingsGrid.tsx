@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { fetchHomeListingsAction } from "@/lib/action";
 
 const seedCardData = [
   {
@@ -65,11 +66,12 @@ const seedCardData = [
   },
 ];
 
-const ListingsGrid = () => {
+const ListingsGrid = async () => {
+  const listings = await fetchHomeListingsAction();
   return (
     <section className="mt-[32px]">
       <ul className="grid grid-cols-5 gap-x-[15px] gap-y-[24px] max-xl:grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
-        {seedCardData.map((item) => (
+        {listings.map((item) => (
           <li key={item.id}>
             <Link href={"/listings"}>
               <article className="rounded-md overflow-hidden bg-primary-100 p-[4px]">
@@ -77,23 +79,23 @@ const ListingsGrid = () => {
                   <Image
                     height={244}
                     width={244}
-                    src={item.image}
+                    src={item.pictures[0]}
                     alt={item.title}
                     className="h-full w-full object-cover object-center"
                   />
                 </div>
                 <div className="mt-[8px] space-y-[2px] px-1">
                   <p className="font-medium">
-                    ${item.price}
+                    ${item.price_day}
                     <span className="text-sm">/day</span>
                   </p>
                   <div className="flex justify-between items-center">
                     <p className="leading-snug line-clamp-1 text-sm">
                       {item.title}
                     </p>
-                    <span>
+                    {/* <span>
                       <ArrowRight strokeWidth={1} size={20} />
-                    </span>
+                    </span> */}
                   </div>
                 </div>
               </article>
