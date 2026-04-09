@@ -106,7 +106,9 @@ const Navbar = () => {
               )}
             </div>
 
-            <CtaButton text="List your item" />
+            <Link href="/listing/new">
+              <CtaButton text="List your item" />
+            </Link>
           </div>
         </nav>
       </header>
