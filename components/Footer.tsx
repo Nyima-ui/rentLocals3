@@ -11,6 +11,7 @@ const Footer = () => {
             width={137}
             src="/logo.svg"
             alt="RentLocals logo"
+            loading="eager"
           />
         </Link>
 
