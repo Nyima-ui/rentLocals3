@@ -75,7 +75,7 @@ const Navbar = () => {
                 ></Image>
               </button>
               {isDropDownOpened && (
-                <ul className="absolute top-full right-0 w-[115px] bg-primary-100 py-[8px] rounded-md shadow-sm shadow-text/60  translate-y-2">
+                <ul className="absolute top-full right-0 w-[115px] bg-primary-100 py-[8px] rounded-md shadow-sm shadow-primary-400/70  translate-y-2">
                   <li className="px-[8px] hover:bg-primary-200">
                     <Link href="/">Profile</Link>
                   </li>
@@ -107,7 +107,7 @@ const Navbar = () => {
           onClick={() => setisMobileMenuOpened((prev) => !prev)}
         >
           <button
-            className={cn(`block w-[26px] h-[16px] cursor-pointer
+            className={cn(`block w-[25px] h-[16px] cursor-pointer
            after:content-[''] after:absolute after:top-full after:h-0 after:border-b-3 after:border-text after:w-full after:left-0 after:right-0 after:transition-all after:ease-out after:duration-300 after:rounded-md ${isMobileMenuOpened && `after:-rotate-45 afer:origin-center after:top-1/2`}
            
            before:content-[''] before:absolute before:top-0 before:h-0 before:border-b-3 before:border-text before:w-full beforer:left-0 before:right-0 before:transition-all before:ease-out before:duration-300 before:rounded-md ${isMobileMenuOpened && `before:rotate-45 before:origin-center before:top-1/2`}`)}
