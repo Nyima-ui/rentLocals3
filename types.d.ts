@@ -19,6 +19,10 @@ interface Listing {
 }
 interface AuthContextProps {
   user: User | null;
+  profile: {
+    avatar: string | null;
+    fullname: string | null;
+  } | null;
 }
 
 interface HyggloPrice {
@@ -77,4 +81,9 @@ interface BookingPayload {
   price_day: number;
   total: number;
   status: "pending" | "accepted" | "active" | "completed" | "cancelled";
+}
+
+interface Profile {
+  avatar: string;
+  fullname: string;
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Syne, Instrument_Sans } from "next/font/google";
-import './style.css'
+import "./style.css";
+import AuthProvider from "@/context/AuthProvider";
 
 const syne = Syne({
   variable: "--font-syne",
@@ -29,7 +30,9 @@ export default function RootLayout({
       lang="en"
       className={`${syne.variable} ${instrumentSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

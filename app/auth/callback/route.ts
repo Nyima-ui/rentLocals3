@@ -16,7 +16,7 @@ const updateProfile = async () => {
       .eq("id", user.id)
       .single();
 
-    if (existing && !existing.fullname && !existing.avatar) {
+    if (existing && (!existing.fullname || !existing.avatar)) {
       const { error: profileError } = await supabase
         .from("profiles")
         .update({
@@ -46,7 +46,11 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      await updateProfile();
+      try {
+        await updateProfile();
+      } catch (error) {
+        console.error(`Error updating profile after Google auth ${error}`);
+      }
       const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === "development";
       if (isLocalEnv) {

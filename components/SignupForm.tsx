@@ -103,6 +103,7 @@ const SignupForm = () => {
           password,
         });
         if (error) throw error;
+        router.push("/");
       } catch (error) {
         console.error(`Error signing in ${error}`);
       } finally {
