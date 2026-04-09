@@ -10,3 +10,103 @@ export const fetchHomeListingsAction = async (): Promise<Listing[]> => {
 
   return data;
 };
+
+// create table public.listings (
+//   id uuid not null default gen_random_uuid (),
+//   owner_id uuid not null, --
+//   category text not null, --
+//   title text not null, --
+//   description text null, --
+//   location text null, --
+//   pictures text[] null,
+//   status text not null default 'active'::text,
+//   price_day numeric(10, 2) null,
+//   price_week numeric(10, 2) null,
+//   created_at timestamp with time zone not null default now(),
+//   updated_at timestamp with time zone not null default now(),
+//   constraint listings_pkey primary key (id),
+//   constraint listings_owner_id_fkey foreign KEY (owner_id) references profiles (id) on delete CASCADE
+// ) TABLESPACE pg_default;
+
+// create trigger listings_updated_at BEFORE
+// update on listings for EACH row
+// execute FUNCTION update_updated_at ();
+
+const uploadImageToStorage = async (
+  validPictures: File[],
+  userId: string,
+  listingId: string,
+): Promise<string[]> => {
+  const supabase = await createClient();
+  const pictureUrls: string[] = [];
+  for (let i = 0; i < validPictures.length; i++) {
+    const file = validPictures[i];
+    const ext = file.name.split(".").pop();
+    const filePath = `${userId}/${listingId}/${i}-${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("listing-images")
+      .upload(filePath, file, { cacheControl: "3600", upsert: false });
+
+    if (uploadError) throw uploadError;
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("listing-images").getPublicUrl(filePath);
+
+    pictureUrls.push(publicUrl);
+  }
+
+  return pictureUrls;
+};
+
+export const createListingAction = async (
+  formData: FormData,
+  userId: string,
+) => {
+  const supabase = await createClient();
+
+  const category = formData.get("category") as string;
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const location = formData.get("location") as string;
+  const priceDay = Number(formData.get("price-day"));
+  const priceWeek = Number(formData.get("price-week"));
+  const pictures = formData.getAll("picture") as File[];
+  const validPictures = pictures.filter((file) => file.size > 0);
+
+  const { data: listing, error } = await supabase
+    .from("listings")
+    .insert({
+      owner_id: userId,
+      category,
+      title,
+      description,
+      location,
+      pictures,
+      price_day: priceDay,
+      price_week: priceWeek,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw error;
+
+  const pictureUrls = await uploadImageToStorage(
+    validPictures,
+    userId,
+    listing.id,
+  ).catch(async (err) => {
+    await supabase.from("listings").delete().eq("id", listing.id);
+    throw err;
+  });
+
+  const { error: updateError } = await supabase
+    .from("listings")
+    .update({ pictures: pictureUrls })
+    .eq("id", listing.id);
+
+  if (updateError) throw updateError;
+
+  return { success: true };
+};
