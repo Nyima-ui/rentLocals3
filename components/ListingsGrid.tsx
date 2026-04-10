@@ -73,7 +73,7 @@ const ListingsGrid = async () => {
       <ul className="grid grid-cols-5 gap-x-[15px] gap-y-[24px] max-xl:grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
         {listings.map((item) => (
           <li key={item.id}>
-            <Link href={"/listings"}>
+            <Link href={`/listing/${item.id}`}>
               <article className="rounded-md overflow-hidden bg-primary-100 p-[4px]">
                 <div className="h-[244px] max-xl:h-[220px] max-lg:h-[210px] max-sm:h-[300px] overflow-hidden rounded-md">
                   <Image

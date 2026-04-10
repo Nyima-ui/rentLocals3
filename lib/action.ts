@@ -11,27 +11,6 @@ export const fetchHomeListingsAction = async (): Promise<Listing[]> => {
   return data;
 };
 
-// create table public.listings (
-//   id uuid not null default gen_random_uuid (),
-//   owner_id uuid not null, --
-//   category text not null, --
-//   title text not null, --
-//   description text null, --
-//   location text null, --
-//   pictures text[] null,
-//   status text not null default 'active'::text,
-//   price_day numeric(10, 2) null,
-//   price_week numeric(10, 2) null,
-//   created_at timestamp with time zone not null default now(),
-//   updated_at timestamp with time zone not null default now(),
-//   constraint listings_pkey primary key (id),
-//   constraint listings_owner_id_fkey foreign KEY (owner_id) references profiles (id) on delete CASCADE
-// ) TABLESPACE pg_default;
-
-// create trigger listings_updated_at BEFORE
-// update on listings for EACH row
-// execute FUNCTION update_updated_at ();
-
 const uploadImageToStorage = async (
   validPictures: File[],
   userId: string,
@@ -109,4 +88,20 @@ export const createListingAction = async (
   if (updateError) throw updateError;
 
   return { success: true };
+};
+
+export const fetchListingByIdAction = async (
+  listingId: string,
+): Promise<Listing> => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("listings")
+    .select("*")
+    .eq("id", listingId)
+    .single();
+
+  if (error) throw error;
+
+  return data;
 };
