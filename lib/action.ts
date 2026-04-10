@@ -92,12 +92,12 @@ export const createListingAction = async (
 
 export const fetchListingByIdAction = async (
   listingId: string,
-): Promise<Listing> => {
+): Promise<SingleListing> => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("listings")
-    .select("*")
+    .select("*, owner:profiles!listings_owner_id_fkey(fullname, avatar)")
     .eq("id", listingId)
     .single();
 

@@ -17,6 +17,13 @@ interface Listing {
   price_day: number;
   price_week: number;
 }
+
+interface SingleListing extends Listing {
+  owner: {
+    avatar: string;
+    fullname: string;
+  };
+}
 interface AuthContextProps {
   user: User | null;
   profile: {

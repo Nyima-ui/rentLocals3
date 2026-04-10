@@ -133,7 +133,8 @@ function Calendar({
         ),
         disabled: cn(
           "text-muted-foreground opacity-50",
-          defaultClassNames.disabled
+          defaultClassNames.disabled, 
+          "hover:bg-transparent pointer-events-none"
         ),
         hidden: cn("invisible", defaultClassNames.hidden),
         ...classNames,
