@@ -3,7 +3,10 @@ import dynamic from "next/dynamic";
 import CtaButton from "./CtaButton";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
-import { calculatePrice, formatDate } from "@/lib/utils";
+import { calculatePrice, formatDate, toLocaleDateString } from "@/lib/utils";
+import { useAuth } from "@/context/AuthProvider";
+import { useRouter } from "next/navigation";
+import { requestBookingAction } from "@/lib/action";
 
 const ShadCnCalendar = dynamic(
   () => import("./ui/calendar").then((mod) => mod.Calendar),
@@ -12,6 +15,11 @@ const ShadCnCalendar = dynamic(
 
 const Calendar = ({ listing }: { listing: Listing }) => {
   const [range, setRange] = useState<DateRange | undefined>();
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const isOwner = listing?.owner_id === user?.id;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -27,6 +35,38 @@ const Calendar = ({ listing }: { listing: Listing }) => {
     days > 0
       ? calculatePrice(days, listing.price_day, listing.price_week)
       : null;
+
+  const handleRequestBooking = async () => {
+    console.log("anything!?")
+    if (!user) {
+      router.push("/signup");
+      return;
+    }
+    if (!range?.from || !range?.to) return;
+    if (!total) return;
+    if (isOwner) return;
+
+    try {
+      setLoading(true);
+      const bookingPayload: BookingPayload = {
+        renter_id: user.id,
+        owner_id: listing.owner_id,
+        listing_id: listing.id,
+        start_date: toLocaleDateString(range?.from),
+        end_date: toLocaleDateString(range?.to),
+        price_day: listing.price_day,
+        total,
+        status: "pending",
+      };
+
+      const bookingId = await requestBookingAction(bookingPayload);
+      router.push(`/booking/${bookingId}`);
+    } catch (error) {
+      console.error(`Error requesting a booking ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-103">
@@ -64,7 +104,17 @@ const Calendar = ({ listing }: { listing: Listing }) => {
             {total !== null ? `$${total}` : "-"}
           </span>
         </div>
-        <CtaButton text="Request Booking" className="mt-5" />
+        {isOwner ? (
+          <p className="mt-3 text-sm text-primary font-medium">You can&apos;t book your own listing.</p>
+        ) : (
+          <CtaButton
+            text="Request Booking"
+            className="mt-5"
+            onClick={handleRequestBooking}
+            disabled={total === null}
+            loading={loading}
+          />
+        )}
       </div>
     </div>
   );

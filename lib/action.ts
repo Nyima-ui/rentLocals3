@@ -105,3 +105,64 @@ export const fetchListingByIdAction = async (
 
   return data;
 };
+
+//same listing id
+//same renter id
+//same owner id
+
+interface ExistingBookingPayload {
+  renter_id: string;
+  owner_id: string;
+  listing_id: string;
+}
+
+export const fetchExistingBooking = async (
+  payload: ExistingBookingPayload,
+): Promise<string | null> => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("booking")
+    .select("id")
+    .eq("renter_id", payload.renter_id)
+    .eq("listing_id", payload.listing_id)
+    .eq("owner_id", payload.owner_id)
+    .in("status", ["pending", "accepted", "active", "declined"])
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (data) {
+    return data.id;
+  }
+
+  return null;
+};
+
+export const requestBookingAction = async (
+  bookingPayload: BookingPayload,
+): Promise<string> => {
+  const supabase = await createClient();
+
+  const existingBookingPayload: ExistingBookingPayload = {
+    renter_id: bookingPayload.renter_id,
+    owner_id: bookingPayload.owner_id,
+    listing_id: bookingPayload.listing_id,
+  };
+
+  const existingBookingId = await fetchExistingBooking(existingBookingPayload);
+
+  if (existingBookingId) {
+    return existingBookingId;
+  }
+
+  const { data, error } = await supabase
+    .from("booking")
+    .insert(bookingPayload)
+    .select("id")
+    .single();
+
+  if (error) throw error;
+
+  return data.id;
+};

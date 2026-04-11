@@ -87,7 +87,13 @@ interface BookingPayload {
   end_date: string;
   price_day: number;
   total: number;
-  status: "pending" | "accepted" | "active" | "completed" | "cancelled";
+  status:
+    | "pending"
+    | "accepted"
+    | "active"
+    | "returned"
+    | "cancelled"
+    | "declined";
 }
 
 interface Profile {
