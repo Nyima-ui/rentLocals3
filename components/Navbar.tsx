@@ -7,16 +7,19 @@ import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/context/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isDropDownOpened, setisDropDownOpened] = useState(false);
   const [isMobileMenuOpened, setisMobileMenuOpened] = useState(false);
   const { user, profile } = useAuth();
+  const router = useRouter();
 
   const handleSignOut = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
     setisDropDownOpened(false);
+    router.push("/");
   };
 
   useEffect(() => {

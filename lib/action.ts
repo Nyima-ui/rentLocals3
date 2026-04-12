@@ -106,16 +106,6 @@ export const fetchListingByIdAction = async (
   return data;
 };
 
-//same listing id
-//same renter id
-//same owner id
-
-interface ExistingBookingPayload {
-  renter_id: string;
-  owner_id: string;
-  listing_id: string;
-}
-
 export const fetchExistingBooking = async (
   payload: ExistingBookingPayload,
 ): Promise<string | null> => {
@@ -165,4 +155,41 @@ export const requestBookingAction = async (
   if (error) throw error;
 
   return data.id;
+};
+
+//from profiles: fullname and avatar
+//from listings: title, pictures
+export const fetchBookingAction = async (id: string): Promise<Booking> => {
+  const supabase = await createClient();
+  
+  const { error, data: booking } = await supabase
+    .from("booking")
+    .select(
+      `
+    *,
+    listing:listing_id (
+      title,
+      pictures
+    ),
+    owner:owner_id (
+      fullname,
+      avatar
+    ),
+    renter:renter_id (
+      fullname,
+      avatar
+    ),
+    status_history:booking_status_history (
+      id,
+      status,
+      created_at
+    )
+  `,
+    )
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+
+  return booking;
 };

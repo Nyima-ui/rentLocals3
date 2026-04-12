@@ -100,3 +100,43 @@ interface Profile {
   avatar: string;
   fullname: string;
 }
+
+interface ExistingBookingPayload {
+  renter_id: string;
+  owner_id: string;
+  listing_id: string;
+}
+
+interface BookingStatusHistory {
+  id: string;
+  status: Booking["status"];
+  created_at: string;
+}
+
+interface Booking {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  start_date: string;
+  end_date: string;
+  price_day: string;
+  total: string;
+  status: "pending" | "accepted" | "active" | "returned" | "cancelled" | "declined";
+  payment_status: string;
+  listing_id: string;
+  owner_id: string;
+  renter_id: string;
+  listing: {
+    title: string;
+    pictures: string[];
+  };
+  owner: {
+    fullname: string;
+    avatar: string;
+  };
+  renter: {
+    fullname: string;
+    avatar: string;
+  };
+  status_history: BookingStatusHistory[];
+}

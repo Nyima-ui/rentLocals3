@@ -22,7 +22,7 @@ const CtaButton = ({
       {...props}
     >
       {loading && (
-        <span className="size-6 border-3 border-primary-200 border-b-transparent rounded-full inline-block animate-spin"></span>
+        <span className="size-3 border-2 border-primary-200 border-b-transparent rounded-full inline-block animate-spin"></span>
       )}
       {text}
     </button>
