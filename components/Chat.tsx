@@ -1,5 +1,6 @@
 import { CircleAlert, LucideSend } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 const SystemMessage = ({ message }: { message: string }) => {
   return (
@@ -46,7 +47,7 @@ const MessageBubble = ({ variant, msg, avatar }: MessageBubbleProps) => {
   }
 };
 
-const MessageInput = () => {
+const MessageInput = ({ messageTo }: { messageTo: string }) => {
   return (
     <div>
       <form
@@ -59,7 +60,7 @@ const MessageInput = () => {
         <input
           type="text"
           className="flex-1 focus:outline-none px-1"
-          placeholder={`Type a message...`}
+          placeholder={`Message to ${messageTo}`}
           id="message-input"
           name="message-input"
         />
@@ -68,18 +69,24 @@ const MessageInput = () => {
         </button>
       </form>
 
-      <form className="fixed bottom-0 left-0 w-full bg-bg-main py-4 px-2 z-10 gap-2 hidden max-lg:flex">
+      <form
+        className="fixed bottom-0 left-0 w-full bg-bg-main py-4 z-10 gap-2 hidden max-lg:flex 
+      px-20 max-lg:px-10 max-sm:px-5"
+      >
         <label htmlFor="message-input" className="sr-only">
           Message
         </label>
         <input
           type="text"
           className="flex-1 focus-within:outline-2 focus-within:outline-primary-300 px-1 rounded-md border border-primary-200 shadow-sm shadow-primary/10"
-          placeholder={`Message to owner`}
+          placeholder={`Message to ${messageTo}`}
           id="message-input"
           name="message-input"
         />
-        <button type="submit" className="bg-primary rounded-md p-2 cursor-pointer">
+        <button
+          type="submit"
+          className="bg-primary rounded-md p-2 cursor-pointer"
+        >
           <LucideSend color="#fff5f0" size={19} />
         </button>
       </form>
@@ -87,11 +94,24 @@ const MessageInput = () => {
   );
 };
 
-const Chat = ({ booking }: { booking: Booking }) => {
+const Chat = ({
+  booking,
+  classname,
+  messageTo,
+}: {
+  booking: Booking;
+  messageTo: string;
+  classname?: string;
+}) => {
   return (
-    <section className="mt-[54px] flex-1 bg-primary-100 rounded-md py-4 pl-4 max-h-[648px] relative border border-primary-200 min-w-[42%]">
+    <section
+      className={cn(
+        `mt-[54px] max-lg:mt-8 flex-1 bg-primary-100 rounded-md py-4 pl-4 h-[648px] relative border border-primary-200 min-w-[42%] `,
+        classname,
+      )}
+    >
       <div
-        className="h-[calc(100%-40px)] max-lg:h-[600px] overflow-y-scroll pb-20 [&::-webkit-scrollbar]:w-2 pr-4 [&::-webkit-scrollbar-track]:bg-[#fff5f0] [&::-webkit-scrollbar-thumb]:bg-[#9e9e9e] [&::-webkit-scrollbar-thumb]:rounded-full"
+        className="h-[calc(100%-40px)] max-lg:h-[600px] overflow-y-scroll pb-20 [&::-webkit-scrollbar]:w-2 pr-4 [&::-webkit-scrollbar-track]:bg-[#fff5f0] [&::-webkit-scrollbar-thumb]:bg-[#9e9e9e] [&::-webkit-scrollbar-thumb]:rounded-full "
         role="log"
         aria-label="Chat message"
       >
@@ -131,7 +151,7 @@ const Chat = ({ booking }: { booking: Booking }) => {
           avatar={booking.renter.avatar}
         />
       </div>
-      <MessageInput />
+      <MessageInput messageTo={messageTo} />
     </section>
   );
 };

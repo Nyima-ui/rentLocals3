@@ -2,6 +2,7 @@ import OwnerBookingInterface from "@/components/OwnerBookingInterface";
 import RenterBookingInterface from "@/components/RenterBookingInterface";
 import { fetchBookingAction } from "@/lib/action";
 import { createClient } from "@/lib/supabase/server";
+import Footer from "@/components/Footer";
 
 const BookingPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -16,16 +17,17 @@ const BookingPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   const isOwner = booking.owner_id === user?.id;
 
-  console.log(booking)
-
   return (
-    <main className="px-20 max-lg:px-10 max-sm:px-5 border">
-      {isOwner ? (
-        <OwnerBookingInterface />
-      ) : (
-        <RenterBookingInterface booking={booking}/>
-      )}
-    </main>
+    <div className="px-20 max-lg:px-10 max-sm:px-5">
+      <main>
+        {isOwner ? (
+          <OwnerBookingInterface booking={booking}/>
+        ) : (
+          <RenterBookingInterface booking={booking} />
+        )}
+      </main>
+      <Footer classname="max-lg:hidden"/>
+    </div>
   );
 };
 

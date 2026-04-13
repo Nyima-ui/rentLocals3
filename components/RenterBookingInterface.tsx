@@ -16,7 +16,7 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
         Booking details
       </h2>
 
-      <div className="flex mb-20 gap-7 max-lg:flex-col">
+      <div className="flex gap-7 max-lg:flex-col">
         {/* LEFT SIDE  */}
         <div className="mt-[54px] max-md:mt-[100px] w-[58%] max-lg:w-full">
           {/* FIRST CARD  */}
@@ -128,7 +128,7 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
           </article>
         </div>
         {/* RIGHT SIDE  */}
-        <Chat booking={booking}/>
+        <Chat booking={booking} messageTo={booking.owner.fullname}/>
       </div>
     </section>
   );

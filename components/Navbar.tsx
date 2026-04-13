@@ -93,7 +93,7 @@ const Navbar = () => {
               )}
 
               {isDropDownOpened && (
-                <ul className="absolute top-full right-0 w-[115px] bg-primary-100 py-[8px] rounded-md shadow-sm shadow-primary-400/70  translate-y-2">
+                <ul className="absolute top-full right-0 w-[115px] bg-primary-100 py-[8px] rounded-md shadow-sm shadow-primary-400/70  translate-y-2 z-10">
                   <li className="px-[8px] hover:bg-primary-200">
                     <Link href="/">Profile</Link>
                   </li>
