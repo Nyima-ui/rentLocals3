@@ -1,7 +1,7 @@
 import ListingInfo from "@/components/ListingInfo";
 import { fetchListingByIdAction } from "@/lib/action";
 import Calendar from "@/components/Calendar";
-import React from "react";
+import Footer from "@/components/Footer";
 
 const ListingPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -13,6 +13,7 @@ const ListingPage = async ({ params }: { params: Promise<{ id: string }> }) => {
         <ListingInfo listing={listing} />
         <Calendar listing={listing} />
       </section>
+      <Footer />
     </main>
   );
 };

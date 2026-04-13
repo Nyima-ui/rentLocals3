@@ -27,8 +27,18 @@ export const formatDate = (date: Date) => {
 };
 
 export const toLocaleDateString = (date: Date) => {
-  const year = date.getFullYear(); 
-  const month = String(date.getMonth() + 1).padStart(2, "0"); 
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`
-}
+  return `${year}-${month}-${day}`;
+};
+
+export const formateDatetoDayMonthYear = (dateString: string): string => {
+  const date = new Date(dateString);
+
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "long" });
+  const year = date.getFullYear();
+
+  return `${day} ${month}, ${year}`;
+};

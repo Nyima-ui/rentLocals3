@@ -140,3 +140,9 @@ interface Booking {
   };
   status_history: BookingStatusHistory[];
 }
+
+interface MessageBubbleProps {
+  variant: "sent" | "received";
+  msg: string;
+  avatar: string;
+}
