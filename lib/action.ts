@@ -167,7 +167,7 @@ export const requestBookingAction = async (
     sender_id: bookingPayload.renter_id,
     receiver_id: bookingPayload.owner_id,
     listing_id: bookingPayload.listing_id,
-    message: "You have a new booking request",
+    message: "booking_requested",
     type: "system",
   });
 
@@ -219,6 +219,49 @@ export const fetchChatMessagesAction = async (bookingId: string) => {
     .order("created_at", { ascending: true });
 
   if (error) throw error;
+
+  return data;
+};
+
+export const fetchAddressAction = async (userId: string): Promise<string> => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("location")
+    .eq("id", userId)
+    .single();
+
+  if (error) throw error;
+
+  return data.location;
+};
+
+export const ownerAcceptAction = async (booking: Booking) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("booking")
+    .update({ status: "accepted" })
+    .eq("id", booking.id)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  const message: MessagePayload = {
+    booking_id: booking.id,
+    sender_id: booking.owner_id,
+    receiver_id: booking.renter_id,
+    listing_id: booking.listing_id,
+    message: "booking_accepted",
+    type: "system",
+  };
+
+  await chatAction(message);
+
+  const address = await fetchAddressAction(booking.owner_id); 
+  
 
   return data;
 };

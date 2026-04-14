@@ -162,6 +162,54 @@ interface MessagePayload {
   type: "message" | "system";
 }
 
-interface ChatMessage extends MessagePayload {
-  id: string;
+type SystemMessage =
+  | "booking_requested"
+  | "booking_accepted"
+  | "booking_active"
+  | "booking_returned"
+  | "booking_cancelled"
+  | "booking_declined";
+
+interface GetSystemMessageProps {
+  renter: string;
+  systemMessage: SystemMessage;
+  role: "owner" | "renter";
+}
+
+type ChatMessage =
+  | {
+      id: string;
+      type: "message";
+      message: string;
+      sender_id: string;
+      receiver_id: string;
+      booking_id: string;
+      listing_id: string;
+      created_at: string;
+    }
+  | {
+      id: string;
+      type: "system";
+      message: SystemMessage;
+      sender_id: null;
+      receiver_id: null;
+      booking_id: string;
+      listing_id: string;
+      created_at: string;
+    };
+
+type BookingStatus =
+  | "pending"
+  | "accepted"
+  | "active"
+  | "returned"
+  | "cancelled"
+  | "declined";
+
+interface GetBookingStatusMessageProps {
+  renter: string;
+  owner: string;
+  status: BookingStatus;
+  listing: string;
+  role: "renter" | "owner";
 }

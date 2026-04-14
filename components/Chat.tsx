@@ -2,17 +2,31 @@
 import { CircleAlert, LucideSend } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/context/AuthProvider";
+import { getSystemMessage } from "@/lib/utils";
 
-const SystemMessage = ({ message }: { message: string }) => {
+const SystemMessage = ({
+  message,
+  booking,
+}: {
+  message: SystemMessage;
+  booking: Booking;
+}) => {
+  const { user } = useAuth();
+  const isRenter = user.id === booking.renter_id;
+  const readableMessage = getSystemMessage({
+    renter: booking.renter.fullname,
+    systemMessage: message,
+    role: isRenter ? "renter" : "owner",
+  });
+
   return (
-    <div className="bg-primary/30 rounded-md p-1.5 grow-0 mx-auto w-fit border-primary-400 border">
+    <div className="bg-primary/30 rounded-md p-1.5 grow-0 mx-auto w-fit border-primary-400 border mt-7">
       <p className="flex items-center gap-2 text-sm">
         <CircleAlert size={18} color="#2c1815" strokeWidth={1.5} />
-        <span>{message}</span>
+        <span>{readableMessage}</span>
       </p>
     </div>
   );
@@ -80,8 +94,7 @@ const MessageInput = ({
       message,
       type: "message",
     };
-    console.log("user id", user.id)
-    console.log(messagePayload)
+
     try {
       const { error } = await supabase.from("chat").insert(messagePayload);
       if (error) throw error;
@@ -115,7 +128,7 @@ const MessageInput = ({
         <button
           type="submit"
           className={cn(
-            `bg-primary rounded-md p-2 size-[35px] flex items-center justify-center`,
+            `bg-primary rounded-md p-2 size-[35px] flex items-center justify-center cursor-pointer`,
             loading && "cursor-not-allowed opacity-80",
           )}
         >
@@ -173,6 +186,8 @@ const Chat = ({
   classname?: string;
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { user } = useAuth();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -205,7 +220,13 @@ const Chat = ({
     };
   }, [booking.id]);
 
-  console.log(messages);
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop =
+        scrollContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
     <section
       className={cn(
@@ -217,16 +238,19 @@ const Chat = ({
         className="h-[calc(100%-40px)] max-lg:h-[600px] overflow-y-scroll pb-20 [&::-webkit-scrollbar]:w-2 pr-4 [&::-webkit-scrollbar-track]:bg-[#fff5f0] [&::-webkit-scrollbar-thumb]:bg-[#9e9e9e] [&::-webkit-scrollbar-thumb]:rounded-full "
         role="log"
         aria-label="Chat message"
+        ref={scrollContainerRef}
       >
         {messages.map((msg) =>
           msg.type === "system" ? (
-            <SystemMessage key={msg.id} message={msg.message} />
+            <SystemMessage
+              key={msg.id}
+              message={msg.message}
+              booking={booking}
+            />
           ) : (
             <MessageBubble
               key={msg.id}
-              variant={
-                msg.sender_id === booking.renter_id ? "sent" : "received"
-              }
+              variant={msg.sender_id === user.id ? "sent" : "received"}
               avatar={
                 msg.sender_id === booking.renter_id
                   ? booking.renter.avatar

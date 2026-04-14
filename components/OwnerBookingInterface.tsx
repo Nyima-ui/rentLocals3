@@ -1,13 +1,32 @@
+"use client";
 import BackButton from "./BackButton";
 import Chat from "./Chat";
 import Image from "next/image";
 import StepIndicator from "./StepIndicator";
 import Link from "next/link";
 import { ChevronRight, CalendarCheck } from "lucide-react";
-import { formateDatetoDayMonthYear } from "@/lib/utils";
+import {
+  formateDatetoDayMonthYear,
+  getBookingStatusMessage,
+} from "@/lib/utils";
 import CtaButton from "./CtaButton";
+import { ownerAcceptAction } from "@/lib/action";
+import { useState } from "react";
 
 const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
+  const [acceptLoading, setAcceptLoading] = useState(false);
+  const [declineLoading, setDeclineLoading] = useState(false);
+
+  const handleAccept = async () => {
+    try {
+      setAcceptLoading(true);
+      const data = await ownerAcceptAction(booking);
+    } catch (error) {
+      console.error(`Error updating booking status to accepted ${error}`);
+    } finally {
+      setAcceptLoading(false);
+    }
+  };
   return (
     <>
       <BackButton classname="mt-7 max-md:mt-[86px]" />
@@ -31,13 +50,13 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
             <div>
               <h2 className="text-[19px]">Action required</h2>
               <p>
-                <span className="text-primary mr-0.5 max-md:mx-0">
-                  {booking.renter.fullname}
-                </span>{" "}
-                has requested to rent your{" "}
-                <span className="text-primary mx-0.5 max-md:mx-0">
-                  {booking.listing.title}
-                </span>{" "}
+                {getBookingStatusMessage({
+                  renter: booking.renter.fullname,
+                  owner: booking.owner.fullname,
+                  status: booking.status,
+                  listing: booking.listing.title,
+                  role: "owner",
+                })}
               </p>
             </div>
           </div>
@@ -90,9 +109,17 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
           <div className="flex items-center gap-6 mt-1">
             <CtaButton
               text="Decline"
-              className="bg-transparent text-text border border-primary-200 hover:bg-primary-100 text-base"
+              className="bg-transparent text-text border border-primary-200 hover:bg-primary-100 "
+              loading={declineLoading}
             />
-            <CtaButton text="Accept" className="text-base"/>
+            {booking.status !== "accepted" && (
+              <CtaButton
+                text="Accept"
+                className=""
+                onClick={handleAccept}
+                loading={acceptLoading}
+              />
+            )}
           </div>
         </div>
         {/* RIGHT  */}

@@ -42,3 +42,73 @@ export const formateDatetoDayMonthYear = (dateString: string): string => {
 
   return `${day} ${month}, ${year}`;
 };
+
+export const getBookingStatusMessage = (
+  config: GetBookingStatusMessageProps,
+): string => {
+  const { renter, owner, status, listing, role } = config;
+  if (!renter || !owner || !status || !listing) return "";
+
+  const BOOKING_STATUS_MESSAGES = {
+    pending: {
+      owner: `${renter} has requested to rent your ${listing}`,
+      renter: `You've requested to rent the ${listing} from ${owner}.`,
+    },
+    accepted: {
+      owner: `You have accepted ${renter}'s requests to rent your ${listing}`,
+      renter: `Your request to rent ${listing} has been accepted by ${owner}`,
+    },
+    active: {
+      owner: `Your rental ${listing} is active.`,
+      renter: `Your booking ${listing} is active.`,
+    },
+    returned: {
+      owner: `Your ${listing} has been returned to you by ${renter}.`,
+      renter: `You have returned ${listing} to ${owner}.`,
+    },
+    cancelled: {
+      owner: `${renter} cancelled their request to rent ${listing}.`,
+      renter: `You cancelled your request to rent ${listing}`,
+    },
+    declined: {
+      owner: `${owner} declined your request to rent ${listing}.`,
+      renter: `You request to rent ${listing} has been declined.`,
+    },
+  };
+
+  return BOOKING_STATUS_MESSAGES[status][role];
+};
+
+export const getSystemMessage = (config: GetSystemMessageProps): string => {
+  const { renter, systemMessage, role } = config;
+  if (!renter || !systemMessage || !role) return "";
+
+  const SYSTEM_MESSAGES = {
+    booking_requested: {
+      owner: `${renter} sent a booking request.`,
+      renter: `Booking request sent.`,
+    },
+    booking_accepted: {
+      owner: `You accepted the booking.`,
+      renter: `Your booking was accepted.`,
+    },
+    booking_active: {
+      owner: `Rental is now active.`,
+      renter: `Rental is now active.`,
+    },
+    booking_returned: {
+      owner: `Item has been returned.`,
+      renter: `Item has been returned.`,
+    },
+    booking_cancelled: {
+      owner: `Booking was cancelled.`,
+      renter: `You cancelled the booking.`,
+    },
+    booking_declined: {
+      owner: `You declined the booking.`,
+      renter: `Booking was declined.`,
+    },
+  };
+
+  return SYSTEM_MESSAGES[systemMessage][role];
+};

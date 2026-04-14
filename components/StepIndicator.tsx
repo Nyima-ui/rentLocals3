@@ -1,13 +1,5 @@
 import { CircleCheckBig, Circle, XCircle } from "lucide-react";
 
-type BookingStatus =
-  | "pending"
-  | "accepted"
-  | "active"
-  | "returned"
-  | "cancelled"
-  | "declined";
-
 const STEPS: { label: string; status: BookingStatus }[] = [
   { label: "Pending", status: "pending" },
   { label: "Accepted", status: "accepted" },

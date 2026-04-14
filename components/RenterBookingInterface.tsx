@@ -5,7 +5,10 @@ import Chat from "./Chat";
 import StepIndicator from "./StepIndicator";
 import Link from "next/link";
 import { ChevronRight, CalendarCheck } from "lucide-react";
-import { formateDatetoDayMonthYear } from "@/lib/utils";
+import {
+  formateDatetoDayMonthYear,
+  getBookingStatusMessage,
+} from "@/lib/utils";
 import CtaButton from "./CtaButton";
 
 const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
@@ -65,15 +68,13 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
                 alt={booking.owner.fullname}
               />
               <p className="leading-tight max-w-[567px]">
-                You&apos;ve requested to rent the{" "}
-                <span className="text-primary mx-1 max-md:mx-0 font-medium">
-                  {booking.listing.title}
-                </span>{" "}
-                from{" "}
-                <span className="text-primary mx-1 max-md:mx-0 font-medium">
-                  {booking.owner.fullname}
-                </span>
-                . Hang tight while they review your request.
+                {getBookingStatusMessage({
+                  renter: booking.renter.fullname,
+                  owner: booking.owner.fullname,
+                  status: booking.status,
+                  listing: booking.listing.title,
+                  role: "renter",
+                })}
               </p>
             </div>
 
@@ -128,7 +129,7 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
           </article>
         </div>
         {/* RIGHT SIDE  */}
-        <Chat booking={booking} messageTo={booking.owner.fullname}/>
+        <Chat booking={booking} messageTo={booking.owner.fullname} />
       </div>
     </section>
   );
