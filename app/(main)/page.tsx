@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <main className="px-[80px] max-lg:px-[40px] max-sm:px-[20px]">
       <section
-        className="h-[184px] mt-[40px] bg-[url('/hero-bg.png')] flex justify-center items-end bg-cover bg-center"
+        className="h-[184px] mt-[40px] bg-[url('/hero-bg.png')] flex justify-center items-end bg-cover bg-center max-md:mt-[98px]"
         aria-label="hero"
       >
         <h1 className="text-[47px] font-syne max-sm:text-[33px] max-lg:leading-tight text-center font-medium">

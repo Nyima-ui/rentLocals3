@@ -121,7 +121,13 @@ interface Booking {
   end_date: string;
   price_day: string;
   total: string;
-  status: "pending" | "accepted" | "active" | "returned" | "cancelled" | "declined";
+  status:
+    | "pending"
+    | "accepted"
+    | "active"
+    | "returned"
+    | "cancelled"
+    | "declined";
   payment_status: string;
   listing_id: string;
   owner_id: string;
@@ -145,4 +151,17 @@ interface MessageBubbleProps {
   variant: "sent" | "received";
   msg: string;
   avatar: string;
+}
+
+interface MessagePayload {
+  booking_id: string;
+  sender_id: string;
+  receiver_id: string;
+  listing_id: string;
+  message: string;
+  type: "message" | "system";
+}
+
+interface ChatMessage extends MessagePayload {
+  id: string;
 }

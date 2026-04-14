@@ -90,9 +90,9 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
           <div className="flex items-center gap-6 mt-1">
             <CtaButton
               text="Decline"
-              className="bg-transparent text-text border border-primary-200 hover:bg-primary-100"
+              className="bg-transparent text-text border border-primary-200 hover:bg-primary-100 text-base"
             />
-            <CtaButton text="Accept" />
+            <CtaButton text="Accept" className="text-base"/>
           </div>
         </div>
         {/* RIGHT  */}

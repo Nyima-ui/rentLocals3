@@ -129,6 +129,14 @@ export const fetchExistingBooking = async (
   return null;
 };
 
+export const chatAction = async (payload: MessagePayload) => {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("chat").insert(payload);
+
+  if (error) throw error;
+};
+
 export const requestBookingAction = async (
   bookingPayload: BookingPayload,
 ): Promise<string> => {
@@ -154,14 +162,21 @@ export const requestBookingAction = async (
 
   if (error) throw error;
 
+  await chatAction({
+    booking_id: data.id,
+    sender_id: bookingPayload.renter_id,
+    receiver_id: bookingPayload.owner_id,
+    listing_id: bookingPayload.listing_id,
+    message: "You have a new booking request",
+    type: "system",
+  });
+
   return data.id;
 };
 
-//from profiles: fullname and avatar
-//from listings: title, pictures
 export const fetchBookingAction = async (id: string): Promise<Booking> => {
   const supabase = await createClient();
-  
+
   const { error, data: booking } = await supabase
     .from("booking")
     .select(
@@ -192,4 +207,18 @@ export const fetchBookingAction = async (id: string): Promise<Booking> => {
   if (error) throw error;
 
   return booking;
+};
+
+export const fetchChatMessagesAction = async (bookingId: string) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("chat")
+    .select("*")
+    .eq("booking_id", bookingId)
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+
+  return data;
 };
