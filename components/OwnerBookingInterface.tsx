@@ -5,28 +5,82 @@ import Image from "next/image";
 import StepIndicator from "./StepIndicator";
 import Link from "next/link";
 import { ChevronRight, CalendarCheck } from "lucide-react";
-import {
-  formateDatetoDayMonthYear,
-  getBookingStatusMessage,
-} from "@/lib/utils";
+import { formateDatetoDayMonthYear } from "@/lib/utils";
 import CtaButton from "./CtaButton";
-import { ownerAcceptAction } from "@/lib/action";
-import { useState } from "react";
+import {
+  ownerAcceptAction,
+  fetchListingAddress,
+  ownerDeclineAction,
+} from "@/lib/action";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import GetBookingStatusStatusMessage from "./StatusMessage";
+import { createClient } from "@/lib/supabase/client";
 
 const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
   const [acceptLoading, setAcceptLoading] = useState(false);
   const [declineLoading, setDeclineLoading] = useState(false);
+  const [currentBooking, setCurrentBooking] = useState(booking);
+  const [location, setLocation] = useState("");
+  const router = useRouter();
 
   const handleAccept = async () => {
     try {
       setAcceptLoading(true);
       const data = await ownerAcceptAction(booking);
+      setCurrentBooking(data);
+      fetchListingAddress(booking.listing_id).then(setLocation);
+      // router.refresh();
     } catch (error) {
       console.error(`Error updating booking status to accepted ${error}`);
     } finally {
       setAcceptLoading(false);
     }
   };
+
+  const handleDecline = async () => {
+    try {
+      setDeclineLoading(true);
+      await ownerDeclineAction(booking);
+      router.refresh();
+    } catch (error) {
+      console.log(`Error declining the booking ${error}`);
+    } finally {
+      setDeclineLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel(`owner-booking-${booking.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "booking",
+          filter: `id=eq.${booking.id}`,
+        },
+        (payload) => {
+          setCurrentBooking((prev) => ({ ...prev, ...payload.new }));
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [booking.id]);
+
+  useEffect(() => {
+    const statusesWithAddressAccess = ["accepted", "active"];
+    if (statusesWithAddressAccess.includes(booking.status)) {
+      fetchListingAddress(booking.listing_id).then(setLocation);
+    }
+  }, [booking.status, booking.listing_id]);
+
   return (
     <>
       <BackButton classname="mt-7 max-md:mt-[86px]" />
@@ -35,11 +89,11 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
         {/* LEFT  */}
         <div className="border border-primary-200 rounded-md px-4 pt-6 pb-4 mt-8 space-y-8 w-[58%] max-lg:w-full flex-start">
           <StepIndicator
-            status={booking.status}
+            status={currentBooking.status}
             statusHistory={booking.status_history}
           />
 
-          <div className="flex gap-4 items-start">
+          <div className="flex gap-4 items-center">
             <Image
               height={50}
               width={50}
@@ -48,15 +102,19 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
               className="rounded-full"
             />
             <div>
-              <h2 className="text-[19px]">Action required</h2>
+              {currentBooking.status === "pending" && (
+                <h2 className="text-[19px]">Action required</h2>
+              )}
               <p>
-                {getBookingStatusMessage({
-                  renter: booking.renter.fullname,
-                  owner: booking.owner.fullname,
-                  status: booking.status,
-                  listing: booking.listing.title,
-                  role: "owner",
-                })}
+                <GetBookingStatusStatusMessage
+                  config={{
+                    renter: booking.renter.fullname,
+                    owner: booking.owner.fullname,
+                    status: currentBooking.status,
+                    listing: booking.listing.title,
+                    role: "owner",
+                  }}
+                />
               </p>
             </div>
           </div>
@@ -74,7 +132,11 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
             <dd>{booking.id}</dd>
 
             <dt>Location</dt>
-            <dd>Full address revealed after the payment is confirmed.</dd>
+            <dd>
+              {location
+                ? location
+                : "Full address revealed after the payment is confirmed."}
+            </dd>
 
             <div>
               <div className="flex items-center gap-1 text-text/60">
@@ -106,21 +168,24 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
             </div>
           </dl>
 
-          <div className="flex items-center gap-6 mt-1">
-            <CtaButton
-              text="Decline"
-              className="bg-transparent text-text border border-primary-200 hover:bg-primary-100 "
-              loading={declineLoading}
-            />
-            {booking.status !== "accepted" && (
+          {currentBooking.status !== "declined" && (
+            <div className="flex items-center gap-6 mt-1">
               <CtaButton
-                text="Accept"
-                className=""
-                onClick={handleAccept}
-                loading={acceptLoading}
+                text="Decline"
+                className="bg-transparent text-text border border-primary-200 hover:bg-primary-100 "
+                loading={declineLoading}
+                onClick={handleDecline}
               />
-            )}
-          </div>
+              {currentBooking.status !== "accepted" && (
+                <CtaButton
+                  text="Accept"
+                  className=""
+                  onClick={handleAccept}
+                  loading={acceptLoading}
+                />
+              )}
+            </div>
+          )}
         </div>
         {/* RIGHT  */}
 

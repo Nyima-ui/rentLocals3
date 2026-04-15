@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -41,42 +42,6 @@ export const formateDatetoDayMonthYear = (dateString: string): string => {
   const year = date.getFullYear();
 
   return `${day} ${month}, ${year}`;
-};
-
-export const getBookingStatusMessage = (
-  config: GetBookingStatusMessageProps,
-): string => {
-  const { renter, owner, status, listing, role } = config;
-  if (!renter || !owner || !status || !listing) return "";
-
-  const BOOKING_STATUS_MESSAGES = {
-    pending: {
-      owner: `${renter} has requested to rent your ${listing}`,
-      renter: `You've requested to rent the ${listing} from ${owner}.`,
-    },
-    accepted: {
-      owner: `You have accepted ${renter}'s requests to rent your ${listing}`,
-      renter: `Your request to rent ${listing} has been accepted by ${owner}`,
-    },
-    active: {
-      owner: `Your rental ${listing} is active.`,
-      renter: `Your booking ${listing} is active.`,
-    },
-    returned: {
-      owner: `Your ${listing} has been returned to you by ${renter}.`,
-      renter: `You have returned ${listing} to ${owner}.`,
-    },
-    cancelled: {
-      owner: `${renter} cancelled their request to rent ${listing}.`,
-      renter: `You cancelled your request to rent ${listing}`,
-    },
-    declined: {
-      owner: `${owner} declined your request to rent ${listing}.`,
-      renter: `You request to rent ${listing} has been declined.`,
-    },
-  };
-
-  return BOOKING_STATUS_MESSAGES[status][role];
 };
 
 export const getSystemMessage = (config: GetSystemMessageProps): string => {

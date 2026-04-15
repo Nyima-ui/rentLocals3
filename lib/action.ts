@@ -223,13 +223,13 @@ export const fetchChatMessagesAction = async (bookingId: string) => {
   return data;
 };
 
-export const fetchAddressAction = async (userId: string): Promise<string> => {
+export const fetchListingAddress = async (listingId: string) => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("profiles")
+    .from("listings")
     .select("location")
-    .eq("id", userId)
+    .eq("id", listingId)
     .single();
 
   if (error) throw error;
@@ -260,8 +260,25 @@ export const ownerAcceptAction = async (booking: Booking) => {
 
   await chatAction(message);
 
-  const address = await fetchAddressAction(booking.owner_id); 
-  
-
   return data;
+};
+
+export const ownerDeclineAction = async (booking: Booking) => {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("booking")
+    .update({ status: "declined" })
+    .eq("id", booking.id);
+
+  await chatAction({
+    booking_id: booking.id,
+    sender_id: booking.owner_id,
+    receiver_id: booking.renter_id,
+    listing_id: booking.listing_id,
+    message: "booking_declined",
+    type: "system",
+  });
+
+  if (error) throw error;
 };

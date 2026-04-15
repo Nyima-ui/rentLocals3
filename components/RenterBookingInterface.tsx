@@ -1,18 +1,52 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Chat from "./Chat";
 import StepIndicator from "./StepIndicator";
 import Link from "next/link";
 import { ChevronRight, CalendarCheck } from "lucide-react";
-import {
-  formateDatetoDayMonthYear,
-  getBookingStatusMessage,
-} from "@/lib/utils";
 import CtaButton from "./CtaButton";
+import { fetchListingAddress } from "@/lib/action";
+import { createClient } from "@/lib/supabase/client";
+import { formateDatetoDayMonthYear } from "@/lib/utils";
+import GetBookingStatusStatusMessage from "./StatusMessage";
 
 const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
   const [previewImage, setPreviewImage] = useState(booking.listing.pictures[0]);
+  const [location, setLocation] = useState("");
+  const [currentBooking, setCurrentBooking] = useState(booking);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel(`renter-booking-${booking.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "booking",
+          filter: `id=eq.${booking.id}`,
+        },
+        (payload) => {
+          setCurrentBooking((prev) => ({ ...prev, ...payload.new }));
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [booking.id]);
+
+  useEffect(() => {
+    const statusesWithAddressAccess = ["accepted", "active"];
+    if (statusesWithAddressAccess.includes(currentBooking.status)) {
+      fetchListingAddress(booking.listing_id).then(setLocation);
+    }
+  }, [currentBooking.status, booking.listing_id]);
+
   return (
     <section aria-labelledby="booking-heading">
       <h2 className="sr-only" id="booking-heading">
@@ -57,7 +91,7 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
           {/* SECOND CARD  */}
           <article className="border border-primary-200 rounded-md p-4 w-[calc(100%-84px)] mt-3 max-xl:w-full">
             <StepIndicator
-              status={booking.status}
+              status={currentBooking.status}
               statusHistory={booking.status_history}
             />
             <div className="flex gap-4 items-center my-10">
@@ -66,15 +100,18 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
                 width={50}
                 src={booking.owner.avatar}
                 alt={booking.owner.fullname}
+                className="rounded-full"
               />
               <p className="leading-tight max-w-[567px]">
-                {getBookingStatusMessage({
-                  renter: booking.renter.fullname,
-                  owner: booking.owner.fullname,
-                  status: booking.status,
-                  listing: booking.listing.title,
-                  role: "renter",
-                })}
+                <GetBookingStatusStatusMessage
+                  config={{
+                    renter: booking.renter.fullname,
+                    owner: booking.owner.fullname,
+                    status: currentBooking.status,
+                    listing: booking.listing.title,
+                    role: "renter",
+                  }}
+                />
               </p>
             </div>
 
@@ -91,7 +128,11 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
               <dd>{booking.id}</dd>
 
               <dt>Location</dt>
-              <dd>Full address revealed after the payment is confirmed.</dd>
+              <dd>
+                {location
+                  ? location
+                  : "Full address revealed after the payment is confirmed."}
+              </dd>
 
               <div>
                 <div className="flex items-center gap-1 text-text/60">
@@ -122,10 +163,12 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
                 <dd className="text-primary font-semibold">${booking.total}</dd>
               </div>
             </dl>
-            <CtaButton
-              text="Cancel request"
-              className="text-text bg-transparent hover:bg-primary-100 border-2 border-primary-300 mt-8"
-            />
+            {currentBooking.status !== "declined" && (
+              <CtaButton
+                text="Cancel request"
+                className="text-text bg-transparent hover:bg-primary-100 border-2 border-primary-300 mt-8"
+              />
+            )}
           </article>
         </div>
         {/* RIGHT SIDE  */}
