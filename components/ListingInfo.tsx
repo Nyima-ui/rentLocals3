@@ -2,10 +2,12 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthProvider";
-import CtaButton from "./CtaButton";
 
 const ListingInfo = ({ listing }: { listing: SingleListing }) => {
   const [previewImage, setPreviewImage] = useState(listing.pictures[0]);
+  const { user } = useAuth();
+
+  const isOwner = listing?.owner_id === user?.id;
 
   return (
     <div className="flex-1">
@@ -53,7 +55,12 @@ const ListingInfo = ({ listing }: { listing: SingleListing }) => {
             )}
           </div>
           <p className="mt-5 font-medium">{listing.owner.fullname}</p>
-          <CtaButton text="Message" className="mt-4" />
+          {!isOwner && (
+            <p className="mt-2 text-sm text-text">
+              Want to ask the owner something? Send a booking request to start a
+              conversation.
+            </p>
+          )}
         </div>
       </article>
 

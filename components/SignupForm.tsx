@@ -17,6 +17,7 @@ const SignupForm = () => {
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
     null,
   );
+  const [authError, setAuthError] = useState("");
   const supabase = createClient();
   const router = useRouter();
 
@@ -85,6 +86,15 @@ const SignupForm = () => {
 
         router.push("/");
       } catch (error) {
+        if (
+          error instanceof Error &&
+          error.message.includes("User already registered")
+        ) {
+          setAuthError(
+            "An account with this email already exists. Please login instead.",
+          );
+          return;
+        }
         console.error(`Error signing up ${error}`);
       } finally {
         setLoading(false);
@@ -105,6 +115,13 @@ const SignupForm = () => {
         if (error) throw error;
         router.push("/");
       } catch (error) {
+        if (
+          error instanceof Error &&
+          error.message.includes("Invalid login credentials")
+        ) {
+          setAuthError("Incorrect email or password.");
+          return;
+        }
         console.error(`Error signing in ${error}`);
       } finally {
         setLoading(false);
@@ -150,7 +167,10 @@ const SignupForm = () => {
                 `font-medium cursor-pointer py-2`,
                 mode === "signup" ? "" : "opacity-50",
               )}
-              onClick={() => setMode("signup")}
+              onClick={() => {
+                setMode("signup");
+                setAuthError("");
+              }}
             >
               Sign up
             </button>
@@ -160,7 +180,10 @@ const SignupForm = () => {
                 `font-medium cursor-pointer ml-[24px] py-2`,
                 mode === "login" ? "" : "opacity-50",
               )}
-              onClick={() => setMode("login")}
+              onClick={() => {
+                setMode("login");
+                setAuthError("");
+              }}
             >
               Log in
             </button>
@@ -243,6 +266,11 @@ const SignupForm = () => {
                 className="block p-[8px] border border-primary-200 rounded-md w-full focus:outline-1.5 focus:outline-primary mt-3"
                 required
               />
+              {authError && mode === "login" && (
+                <p className="mt-3 text-sm text-red-400 font-semibold">
+                  {authError}
+                </p>
+              )}
             </div>
             {/* Address  */}
             {mode === "signup" && (
@@ -268,6 +296,11 @@ const SignupForm = () => {
                   type="button"
                 />
               </div>
+            )}
+            {authError && mode === "signup" && (
+              <p className="mt-3 text-sm text-red-400 font-semibold">
+                {authError}
+              </p>
             )}
           </div>
 
