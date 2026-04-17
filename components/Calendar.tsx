@@ -37,7 +37,6 @@ const Calendar = ({ listing }: { listing: Listing }) => {
       : null;
 
   const handleRequestBooking = async () => {
-    console.log("anything!?")
     if (!user) {
       router.push("/signup");
       return;

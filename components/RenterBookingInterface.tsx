@@ -31,6 +31,19 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
         },
         (payload) => {
           setCurrentBooking((prev) => ({ ...prev, ...payload.new }));
+
+          supabase
+            .from("booking_status_history")
+            .select("id, status, created_at")
+            .eq("booking_id", booking.id)
+            .then(({ data }) => {
+              if (data) {
+                setCurrentBooking((prev) => ({
+                  ...prev,
+                  status_history: data,
+                }));
+              }
+            });
         },
       )
       .subscribe();
@@ -92,7 +105,7 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
           <article className="border border-primary-200 rounded-md p-4 w-[calc(100%-84px)] mt-3 max-xl:w-full">
             <StepIndicator
               status={currentBooking.status}
-              statusHistory={booking.status_history}
+              statusHistory={currentBooking.status_history}
             />
             <div className="flex gap-4 items-center my-10">
               <Image

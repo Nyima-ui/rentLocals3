@@ -43,7 +43,7 @@ const StepIndicator = ({
   const currentIndex = isCancelled
     ? cancelAfterIndex
     : STEPS.findIndex((s) => s.status === status);
-    
+
   return (
     <div className="flex items-center relative shadow-md shadow-primary-100">
       <div className="absolute h-0.5 w-full bg-text/30 top-2.5"></div>

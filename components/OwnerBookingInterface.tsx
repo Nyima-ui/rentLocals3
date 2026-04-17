@@ -7,15 +7,15 @@ import Link from "next/link";
 import { ChevronRight, CalendarCheck } from "lucide-react";
 import { formateDatetoDayMonthYear } from "@/lib/utils";
 import CtaButton from "./CtaButton";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import GetBookingStatusStatusMessage from "./StatusMessage";
+import { createClient } from "@/lib/supabase/client";
 import {
   ownerAcceptAction,
   fetchListingAddress,
   ownerDeclineAction,
 } from "@/lib/action";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import GetBookingStatusStatusMessage from "./StatusMessage";
-import { createClient } from "@/lib/supabase/client";
 
 const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
   const [acceptLoading, setAcceptLoading] = useState(false);
@@ -28,7 +28,7 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
     try {
       setAcceptLoading(true);
       const data = await ownerAcceptAction(booking);
-      setCurrentBooking(data);
+      setCurrentBooking((prev) => ({ ...prev, ...data }));
       fetchListingAddress(booking.listing_id).then(setLocation);
       // router.refresh();
     } catch (error) {
@@ -42,9 +42,9 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
     try {
       setDeclineLoading(true);
       await ownerDeclineAction(booking);
-      router.refresh();
+      // router.refresh();
     } catch (error) {
-      console.log(`Error declining the booking ${error}`);
+      console.error(`Error declining the booking ${error}`);
     } finally {
       setDeclineLoading(false);
     }
@@ -65,6 +65,19 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
         },
         (payload) => {
           setCurrentBooking((prev) => ({ ...prev, ...payload.new }));
+
+          supabase
+            .from("booking_status_history")
+            .select("id, status, created_at")
+            .eq("booking_id", booking.id)
+            .then(({ data }) => {
+              if (data) {
+                setCurrentBooking((prev) => ({
+                  ...prev,
+                  status_history: data,
+                }));
+              }
+            });
         },
       )
       .subscribe();
@@ -90,7 +103,7 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
         <div className="border border-primary-200 rounded-md px-4 pt-6 pb-4 mt-8 space-y-8 w-[58%] max-lg:w-full flex-start">
           <StepIndicator
             status={currentBooking.status}
-            statusHistory={booking.status_history}
+            statusHistory={currentBooking.status_history}
           />
 
           <div className="flex gap-4 items-center">
