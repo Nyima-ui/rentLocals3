@@ -6,15 +6,28 @@ import StepIndicator from "./StepIndicator";
 import Link from "next/link";
 import { ChevronRight, CalendarCheck } from "lucide-react";
 import CtaButton from "./CtaButton";
-import { fetchListingAddress } from "@/lib/action";
+import { fetchListingAddress, renterCancelAction } from "@/lib/action";
 import { createClient } from "@/lib/supabase/client";
 import { formateDatetoDayMonthYear } from "@/lib/utils";
 import GetBookingStatusStatusMessage from "./StatusMessage";
 
 const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
   const [previewImage, setPreviewImage] = useState(booking.listing.pictures[0]);
+  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState("");
   const [currentBooking, setCurrentBooking] = useState(booking);
+
+  const handleCancel = async () => {
+    try {
+      setLoading(true);
+      const data = await renterCancelAction(currentBooking);
+      setCurrentBooking((prev) => ({ ...prev, data }));
+    } catch (error) {
+      console.error(`Error cancelling the request ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -57,6 +70,8 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
     const statusesWithAddressAccess = ["accepted", "active"];
     if (statusesWithAddressAccess.includes(currentBooking.status)) {
       fetchListingAddress(booking.listing_id).then(setLocation);
+    } else {
+      setLocation("");
     }
   }, [currentBooking.status, booking.listing_id]);
 
@@ -130,7 +145,7 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
 
             <Link
               href={`/listing/${booking.listing_id}`}
-              className="text-[24px] flex items-center gap-10 font-medium hover:opacity-75"
+              className="text-[24px] flex items-center gap-10 font-medium hover:opacity-75 w-fit"
             >
               <span>{booking.listing.title}</span>
               <ChevronRight size={20} strokeWidth={1.5} />
@@ -176,11 +191,21 @@ const RenterBookingInterface = ({ booking }: { booking: Booking }) => {
                 <dd className="text-primary font-semibold">${booking.total}</dd>
               </div>
             </dl>
-            {currentBooking.status !== "declined" && (
+            {!["declined", "cancelled"].includes(currentBooking.status) && (
               <CtaButton
                 text="Cancel request"
                 className="text-text bg-transparent hover:bg-primary-100 border-2 border-primary-300 mt-8"
+                onClick={handleCancel}
+                loading={loading}
               />
+            )}
+            {currentBooking.status === "cancelled" && (
+              <Link href={`/listing/${booking.listing_id}`}>
+                <CtaButton
+                  text="Request again"
+                  className="text-text bg-transparent hover:bg-primary-100 border-2 border-primary-300 mt-8"
+                />
+              </Link>
             )}
           </article>
         </div>

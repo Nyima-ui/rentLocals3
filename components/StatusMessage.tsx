@@ -16,7 +16,7 @@ const GetBookingStatusStatusMessage = ({
     pending: {
       owner: (
         <>
-          {r} has requested to rent your {l}
+          {r} has requested to rent your {l}.
         </>
       ),
       renter: (
@@ -59,7 +59,7 @@ const GetBookingStatusStatusMessage = ({
           {r} cancelled their request to rent {l}.
         </>
       ),
-      renter: <>You cancelled your request to rent {l}</>,
+      renter: <>You cancelled your request to rent {l}.</>,
     },
     declined: {
       owner: (

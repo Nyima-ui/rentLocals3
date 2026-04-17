@@ -41,8 +41,8 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
   const handleDecline = async () => {
     try {
       setDeclineLoading(true);
-      await ownerDeclineAction(booking);
-      // router.refresh();
+      const data = await ownerDeclineAction(booking);
+      setCurrentBooking((prev) => ({ ...prev, data }));
     } catch (error) {
       console.error(`Error declining the booking ${error}`);
     } finally {
@@ -89,10 +89,12 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
 
   useEffect(() => {
     const statusesWithAddressAccess = ["accepted", "active"];
-    if (statusesWithAddressAccess.includes(booking.status)) {
+    if (statusesWithAddressAccess.includes(currentBooking.status)) {
       fetchListingAddress(booking.listing_id).then(setLocation);
+    } else {
+      setLocation("");
     }
-  }, [booking.status, booking.listing_id]);
+  }, [currentBooking.status, booking.listing_id]);
 
   return (
     <>
@@ -134,7 +136,7 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
 
           <Link
             href={`/listing/${booking.listing_id}`}
-            className="text-[24px] flex items-center gap-10 font-medium hover:opacity-75"
+            className="text-[24px] flex items-center gap-10 font-medium hover:opacity-75 w-fit"
           >
             <span>{booking.listing.title}</span>
             <ChevronRight size={20} strokeWidth={1.5} />
@@ -181,7 +183,7 @@ const OwnerBookingInterface = ({ booking }: { booking: Booking }) => {
             </div>
           </dl>
 
-          {currentBooking.status !== "declined" && (
+          {!["cancelled", "declined"].includes(currentBooking.status) && (
             <div className="flex items-center gap-6 mt-1">
               <CtaButton
                 text="Decline"

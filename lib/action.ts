@@ -117,7 +117,7 @@ export const fetchExistingBooking = async (
     .eq("renter_id", payload.renter_id)
     .eq("listing_id", payload.listing_id)
     .eq("owner_id", payload.owner_id)
-    .in("status", ["pending", "accepted", "active", "declined"])
+    .in("status", ["pending", "accepted", "active"])
     .maybeSingle();
 
   if (error) throw error;
@@ -263,13 +263,17 @@ export const ownerAcceptAction = async (booking: Booking) => {
   return data;
 };
 
-export const ownerDeclineAction = async (booking: Booking) => {
+export const ownerDeclineAction = async (
+  booking: Booking,
+): Promise<Booking> => {
   const supabase = await createClient();
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("booking")
     .update({ status: "declined" })
-    .eq("id", booking.id);
+    .eq("id", booking.id)
+    .select()
+    .single();
 
   await chatAction({
     booking_id: booking.id,
@@ -277,6 +281,28 @@ export const ownerDeclineAction = async (booking: Booking) => {
     receiver_id: booking.renter_id,
     listing_id: booking.listing_id,
     message: "booking_declined",
+    type: "system",
+  });
+
+  if (error) throw error;
+
+  return data;
+};
+
+export const renterCancelAction = async (booking: Booking) => {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("booking")
+    .update({ status: "cancelled" })
+    .eq("id", booking.id);
+
+  await chatAction({
+    booking_id: booking.id,
+    sender_id: booking.owner_id,
+    receiver_id: booking.renter_id,
+    listing_id: booking.listing_id,
+    message: "booking_cancelled",
     type: "system",
   });
 
