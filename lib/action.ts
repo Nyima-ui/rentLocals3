@@ -308,3 +308,18 @@ export const renterCancelAction = async (booking: Booking) => {
 
   if (error) throw error;
 };
+
+export const fetchUserListings = async (
+  ownerId: string,
+): Promise<Listing[]> => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("listings")
+    .select("*")
+    .eq("owner_id", ownerId);
+
+  if (error) throw error;
+
+  return data ?? [];
+};

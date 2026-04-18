@@ -52,7 +52,7 @@ const Navbar = () => {
             role="list"
           >
             <li>
-              <Link href={"/dashboard/listing"} className="px-3 py-1">
+              <Link href={"/dashboard/mylistings"} className="px-3 py-1">
                 Listings
               </Link>
             </li>

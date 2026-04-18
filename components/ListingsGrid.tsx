@@ -3,69 +3,6 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { fetchHomeListingsAction } from "@/lib/action";
 
-const seedCardData = [
-  {
-    id: 1,
-    title: "Cleolight LED mask",
-    price: 20,
-    image: "/fake/flash.jpeg",
-  },
-  {
-    id: 2,
-    title: "VL utltrabrig Light",
-    price: 40,
-    image: "/fake/headLight.png",
-  },
-  {
-    id: 3,
-    title: "Mannequins heads",
-    price: 50,
-    image: "/fake/mannequins.jpg",
-  },
-  {
-    id: 4,
-    title: "G2132 Logitech mouse,G2132 Logitech mouse,G2132 Logitech mouse",
-    price: 75,
-    image: "/fake/mouse.avif",
-  },
-  {
-    id: 5,
-    title: "Some toolkit",
-    price: 90,
-    image: "/fake/screwtool.jpg",
-  },
-  {
-    id: 6,
-    title: "Cleolight LED mask",
-    price: 20,
-    image: "/fake/flash.jpeg",
-  },
-  {
-    id: 7,
-    title: "VL utltrabrig Light",
-    price: 40,
-    image: "/fake/headLight.png",
-  },
-  {
-    id: 8,
-    title: "Mannequins heads",
-    price: 50,
-    image: "/fake/mannequins.jpg",
-  },
-  {
-    id: 9,
-    title: "G2132 Logitech mouse",
-    price: 75,
-    image: "/fake/mouse.avif",
-  },
-  {
-    id: 10,
-    title: "Some toolkit",
-    price: 90,
-    image: "/fake/screwtool.jpg",
-  },
-];
-
 const ListingsGrid = async () => {
   const listings = await fetchHomeListingsAction();
   return (
