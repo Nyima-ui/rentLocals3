@@ -23,9 +23,25 @@ const EditListingForm = ({ listing }: { listing: Listing }) => {
 
   const [loading, setLoading] = useState(false);
   const [photoError, setPhotoError] = useState(true);
+  const [formKey, setFormKey] = useState(0);
+
   const { user } = useAuth();
   const router = useRouter();
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const handleReset = async () => {
+    const existingPictures = (listing.pictures ?? []).slice(0, 6);
+    const padded = [
+      ...existingPictures,
+      ...Array(6 - existingPictures.length).fill(null),
+    ];
+
+    setPhotos(Array(6).fill(null));
+    setPhotoPreviews(padded);
+    setKeptPhotos(padded);
+
+    setFormKey((prev) => prev + 1);
+  };
 
   const handlePhotoRemove = (idx: number) => {
     setPhotos((prev) => {
@@ -125,6 +141,7 @@ const EditListingForm = ({ listing }: { listing: Listing }) => {
     <form
       className="mt-[24px] p-4 shadow-post-form bg-bg-main rounded-md w-[564px] max-md:w-auto"
       onSubmit={handleSubmit}
+      key={formKey}
     >
       <div className="space-y-[24px]">
         {/* CATEGORY  */}
@@ -293,6 +310,7 @@ const EditListingForm = ({ listing }: { listing: Listing }) => {
             text="Reset form"
             className="bg-transparent text-text border border-primary-300 hover:bg-primary-100"
             type="button"
+            onClick={handleReset}
           />
           <CtaButton
             text="Update listing"

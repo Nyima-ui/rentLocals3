@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import CtaButton from "./CtaButton";
 import { useAuth } from "@/context/AuthProvider";
@@ -13,6 +13,8 @@ const PostListingForm = () => {
   );
   const [loading, setLoading] = useState(false);
   const [photoError, setPhotoError] = useState(true);
+  const formRef = useRef<HTMLFormElement>(null);
+
   const { user } = useAuth();
   const router = useRouter();
 
@@ -84,10 +86,17 @@ const PostListingForm = () => {
     setPhotoError(!hasPhoto);
   }, [photos]);
 
+  const handleReset = async () => {
+    formRef.current?.reset();
+    setPhotos(Array(6).fill(null));
+    setPhotoPreviews(Array(6).fill(null));
+  };
+
   return (
     <form
       className="mt-[24px] p-4 shadow-post-form bg-bg-main rounded-md w-[564px] max-md:w-auto"
       onSubmit={handleSubmit}
+      ref={formRef}
     >
       <div className="space-y-[24px]">
         {/* CATEGORY  */}
@@ -249,6 +258,7 @@ const PostListingForm = () => {
             text="Reset form"
             className="bg-transparent text-text border border-primary-300 hover:bg-primary-100"
             type="button"
+            onClick={handleReset}
           />
           <CtaButton
             text="Post listing"
