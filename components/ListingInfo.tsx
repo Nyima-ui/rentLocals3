@@ -20,6 +20,7 @@ const ListingInfo = ({ listing }: { listing: SingleListing }) => {
             src={previewImage}
             alt={listing.title}
             className="rounded-md w-full h-full object-cover"
+            loading="eager"
           />
         </div>
         {listing.pictures.length > 0 && (

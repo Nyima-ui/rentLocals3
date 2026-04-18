@@ -17,7 +17,7 @@ const MyListings = async () => {
 
   return (
     <div className="px-[80px] max-lg:px-[40px] max-sm:px-[20px]">
-      <BackButton classname="mt-7" />
+      <BackButton classname="mt-7 max-md:mt-20" />
       <h1 className="text-[27px] mt-6">My listings</h1>
       <MylistingsGrid listings={userListings} />
       <Footer />

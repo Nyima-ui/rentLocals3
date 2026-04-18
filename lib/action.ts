@@ -323,3 +323,46 @@ export const fetchUserListings = async (
 
   return data ?? [];
 };
+
+export const updateListingAction = async (
+  formData: FormData,
+  listingId: string,
+  userId: string,
+) => {
+  const supabase = await createClient();
+
+  const category = formData.get("category") as string;
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const location = formData.get("location") as string;
+  const priceDay = Number(formData.get("price-day"));
+  const priceWeek = Number(formData.get("price-week"));
+  const keptPictures = formData.getAll("kept_picture") as string[];
+  const newPictures = formData.getAll("new_picture") as File[];
+  const validPictures = newPictures.filter((f) => f.size > 0);
+
+  const newPictureUrls =
+    validPictures.length > 0
+      ? await uploadImageToStorage(validPictures, userId, listingId)
+      : [];
+
+  const finalPictures = [...keptPictures, ...newPictureUrls];
+
+  const { error } = await supabase
+    .from("listings")
+    .update({
+      category,
+      title,
+      description,
+      location,
+      price_day: priceDay,
+      price_week: priceWeek,
+      pictures: finalPictures,
+    })
+    .eq("id", listingId)
+    .eq("owner_id", userId);
+
+  if (error) throw error;
+
+  return { success: true };
+};

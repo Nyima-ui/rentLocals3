@@ -1,20 +1,51 @@
 "use client";
-import { useEffect, useState } from "react";
-import { ImagePlus, X } from "lucide-react";
-import CtaButton from "./CtaButton";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import { useRouter } from "next/navigation";
-import { createListingAction } from "@/lib/action";
+import { updateListingAction } from "@/lib/action";
+import { ImagePlus, X } from "lucide-react";
+import CtaButton from "./CtaButton";
 
-const PostListingForm = () => {
+const EditListingForm = ({ listing }: { listing: Listing }) => {
+  const existingPictures = (listing.pictures ?? []).slice(0, 6);
+
+  const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([
+    ...existingPictures,
+    ...Array(6 - existingPictures.length).fill(null),
+  ]);
+
   const [photos, setPhotos] = useState<(File | null)[]>(Array(6).fill(null));
-  const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>(
-    Array(6).fill(null),
-  );
+
+  const [keptPhotos, setKeptPhotos] = useState<(string | null)[]>([
+    ...existingPictures,
+    ...Array(6 - existingPictures.length).fill(null),
+  ]);
+
   const [loading, setLoading] = useState(false);
   const [photoError, setPhotoError] = useState(true);
   const { user } = useAuth();
   const router = useRouter();
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const handlePhotoRemove = (idx: number) => {
+    setPhotos((prev) => {
+      const updated = [...prev];
+      updated[idx] = null;
+      return updated;
+    });
+
+    setPhotoPreviews((prev) => {
+      const updated = [...prev];
+      updated[idx] = null;
+      return updated;
+    });
+
+    setKeptPhotos((prev) => {
+      const updated = [...prev];
+      updated[idx] = null;
+      return updated;
+    });
+  };
 
   const handlePhotoChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -35,16 +66,8 @@ const PostListingForm = () => {
       updated[idx] = file ? URL.createObjectURL(file) : null;
       return updated;
     });
-  };
 
-  const handlePhotoRemove = (idx: number) => {
-    setPhotos((prev) => {
-      const updated = [...prev];
-      updated[idx] = null;
-      return updated;
-    });
-
-    setPhotoPreviews((prev) => {
+    setKeptPhotos((prev) => {
       const updated = [...prev];
       updated[idx] = null;
       return updated;
@@ -57,31 +80,45 @@ const PostListingForm = () => {
     el.style.height = el.scrollHeight + 10 + "px";
   };
 
+  useEffect(() => {
+    const hasPhoto = photoPreviews.some((p) => p !== null);
+    setPhotoError(!hasPhoto);
+  }, [photoPreviews]);
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      const el = textAreaRef.current;
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + 10 + "px";
+    }
+  }, []);
+
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    if (!user.id) router.push("/signup");
+
     const formData = new FormData(e.target);
 
-    const hasPhoto = photos.some((p) => p !== null);
-    if (!hasPhoto) {
-      setPhotoError(true);
-      return;
-    }
-    setPhotoError(false);
+    keptPhotos.forEach((url) => {
+      if (url) formData.append("kept_picture", url);
+    });
+
+    photos.forEach((file) => {
+      if (file) formData.append("new_picture", file);
+    });
+
     try {
       setLoading(true);
-      await createListingAction(formData, user.id);
-      router.push("/");
+      await updateListingAction(formData, listing.id, user.id);
+      router.push("/dashboard/mylistings");
     } catch (error) {
-      console.error(`Error uploading listings`, error);
+      console.error(`Error updating listing`, error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const hasPhoto = photos.some((p) => p !== null);
-    setPhotoError(!hasPhoto);
+    // console.log("photos", photos);
   }, [photos]);
 
   return (
@@ -102,6 +139,7 @@ const PostListingForm = () => {
             className="block p-[8px] border border-primary-200 rounded-md w-full focus:outline-1.5 focus:outline-primary shadow-sm shadow-primary-200/25"
             placeholder="E.g: Car equipment"
             required
+            defaultValue={listing.category}
           />
         </div>
         {/* TITLE  */}
@@ -116,6 +154,7 @@ const PostListingForm = () => {
             className="block p-[8px] border border-primary-200 rounded-md w-full focus:outline-1.5 focus:outline-primary shadow-sm shadow-primary-200/25"
             placeholder="Eg. X Pen Innovator 321"
             required
+            defaultValue={listing.title}
           />
         </div>
         {/* DESCRIPTION  */}
@@ -134,6 +173,8 @@ const PostListingForm = () => {
             placeholder="Describe the item in as much detail as possible"
             onChange={handleTextAreaInput}
             required
+            defaultValue={listing.description}
+            ref={textAreaRef}
           ></textarea>
         </div>
         {/* PICTURES  */}
@@ -152,7 +193,7 @@ const PostListingForm = () => {
                   className="bg-primary-100/40 h-[140px] rounded-md flex items-center justify-center cursor-pointer border border-primary-200/50 bg-center bg-cover"
                   htmlFor={`image-input-${idx}`}
                 >
-                  {!photos[idx] && (
+                  {!photoPreviews[idx] && (
                     <ImagePlus strokeWidth={1} color="#FFCEBD" size={49} />
                   )}
                 </label>
@@ -164,7 +205,7 @@ const PostListingForm = () => {
                   id={`image-input-${idx}`}
                   onChange={(e) => handlePhotoChange(e, idx)}
                 />
-                {photos[idx] && (
+                {photoPreviews[idx] && (
                   <button
                     style={{
                       position: "absolute",
@@ -206,6 +247,7 @@ const PostListingForm = () => {
             placeholder="123 Main St, New York, NY 10001"
             required
             autoComplete="street-address"
+            defaultValue={listing.location}
           />
         </div>
         {/* PRICES  */}
@@ -225,6 +267,7 @@ const PostListingForm = () => {
                 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 placeholder="Eg: $10"
                 required
+                defaultValue={listing.price_day}
               />
             </div>
             <div className="space-y-1 flex-1">
@@ -239,6 +282,7 @@ const PostListingForm = () => {
                 className="block p-[8px] border border-primary-200 rounded-md w-full focus:outline-1.5 focus:outline-primary shadow-sm shadow-primary-200/25
                 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 placeholder="E.g $70"
+                defaultValue={listing.price_week ? listing.price_week : 0}
               />
             </div>
           </div>
@@ -251,7 +295,7 @@ const PostListingForm = () => {
             type="button"
           />
           <CtaButton
-            text="Post listing"
+            text="Update listing"
             className=""
             type="submit"
             loading={loading}
@@ -262,4 +306,4 @@ const PostListingForm = () => {
   );
 };
 
-export default PostListingForm;
+export default EditListingForm;
