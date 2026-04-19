@@ -73,7 +73,7 @@ const PostListingForm = () => {
     try {
       setLoading(true);
       await createListingAction(formData, user.id);
-      router.push("/");
+      router.push("/dashboard/mylistings");
     } catch (error) {
       console.error(`Error uploading listings`, error);
     } finally {

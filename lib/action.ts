@@ -366,3 +366,13 @@ export const updateListingAction = async (
 
   return { success: true };
 };
+
+export const deleteListingAction = async (listingId: string) => {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("listings").delete().eq("id", listingId);
+
+  if (error) throw error;
+
+  return { success: true };
+};
