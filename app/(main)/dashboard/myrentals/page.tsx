@@ -1,5 +1,5 @@
 import BackButton from "@/components/BackButton";
-import { fetchUserBookingsAction } from "@/lib/action";
+import { fetchUserRentalsAction } from "@/lib/action";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Image from "next/image";
@@ -7,9 +7,17 @@ import { formateDatetoDayMonthYear } from "@/lib/utils";
 import CtaButton from "@/components/CtaButton";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import { statusPriority } from "../myrentals/page";
 
-const MyBookings = async () => {
+export const statusPriority: Record<string, number> = {
+  pending: 0,
+  active: 1,
+  accepted: 2,
+  returned: 3,
+  declined: 4,
+  canclled: 5,
+};
+
+const MyRentalsPage = async () => {
   const supabase = await createClient();
 
   const {
@@ -17,7 +25,7 @@ const MyBookings = async () => {
   } = await supabase.auth.getUser();
   if (!user) redirect("/signup");
 
-  const userBookings: Booking[] = await fetchUserBookingsAction(user.id);
+  const userRentals: Booking[] = await fetchUserRentalsAction(user.id);
 
   const statusStyles: Record<string, string> = {
     pending: "bg-amber-400/60 text-amber-800 border border-amber-400/40",
@@ -28,19 +36,19 @@ const MyBookings = async () => {
     active: "bg-blue-400/20 text-blue-800 border border-blue-400/40",
   };
 
-  const sortedBookings = [...userBookings].sort(
+  const sortedRentals = [...userRentals].sort(
     (a, b) =>
       (statusPriority[a.status] ?? 99) - (statusPriority[b.status] ?? 99),
   );
 
   return (
-    <div className="px-[80px] max-lg:px-[40px] max-sm:px-[20px] mb-10">
+    <div className="px-20 max-lg:px-10 max-sm:px-5 mb-10">
       <BackButton classname="mt-7 max-md:mt-20" />
-      {userBookings.length > 0 ? (
+      {userRentals.length > 0 ? (
         <>
           <h1 className="text-[27px] mt-6">My bookings</h1>
           <ul className="mt-5">
-            {sortedBookings.map((booking) => (
+            {sortedRentals.map((booking) => (
               <li
                 key={booking.id}
                 className="flex gap-3 bg-linear-to-r from-primary-100 to-primary-200/70 mt-3 p-3 rounded-md"
@@ -49,12 +57,13 @@ const MyBookings = async () => {
                   <Image
                     height={45}
                     width={45}
-                    alt={booking.owner.fullname}
-                    src={booking.owner.avatar}
+                    alt={booking.renter.fullname}
+                    src={booking.renter.avatar}
+                    className="rounded-full"
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="flex justify-between flex-1 items-start">
+                  <div className="flex justify-between flex-1 items-start gap-3">
                     <p className="font-medium text-[20px] max-md:text-base">
                       {booking.listing.title}
                     </p>
@@ -94,9 +103,9 @@ const MyBookings = async () => {
               alt="Note illustration"
               src={"/note.svg"}
             />
-            <h1 className="font-syne text-[27px] mt-2">No bookings yet</h1>
+            <h1 className="font-syne text-[27px] mt-2">No rentals yet</h1>
             <p className="max-w-[384px] text-center leading-tight text-text/60 text-sm mt-1">
-              Things you rent will appear here.
+              When someone rents from you, it&apos;ll show up here.
             </p>
           </div>
         </div>
@@ -106,4 +115,4 @@ const MyBookings = async () => {
   );
 };
 
-export default MyBookings;
+export default MyRentalsPage;

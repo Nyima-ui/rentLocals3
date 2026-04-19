@@ -415,3 +415,39 @@ export const fetchUserBookingsAction = async (
 
   return booking;
 };
+
+export const fetchUserRentalsAction = async (
+  ownerId: string,
+): Promise<Booking[]> => {
+  const supabase = await createClient();
+
+  const { error, data: booking } = await supabase
+    .from("booking")
+    .select(
+      `
+    *,
+    listing:listing_id (
+      title,
+      pictures
+    ),
+    owner:owner_id (
+      fullname,
+      avatar
+    ),
+    renter:renter_id (
+      fullname,
+      avatar
+    ),
+    status_history:booking_status_history (
+      id,
+      status,
+      created_at
+    )
+  `,
+    )
+    .eq("owner_id", ownerId);
+
+  if (error) throw error;
+
+  return booking;
+};

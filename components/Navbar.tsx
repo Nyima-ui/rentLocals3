@@ -50,17 +50,26 @@ const Navbar = () => {
 
           <ul className="flex gap-9 max-lg:gap-4 items-center" role="list">
             <li>
-              <Link href={"/dashboard/mylistings"} className="px-3 py-1 relative after:absolute after:bottom-0 after:left-2 after:w-0 after:h-[1.5px] after:bg-primary after:transition-all after:duration-200 after:ease-in hover:after:w-full">
+              <Link
+                href={"/dashboard/mylistings"}
+                className="px-3 py-1 relative after:absolute after:bottom-0 after:left-2 after:w-0 after:h-[1.5px] after:bg-primary after:transition-all after:duration-200 after:ease-in hover:after:w-full"
+              >
                 Listings
               </Link>
             </li>
             <li>
-              <Link href={"/dashboard/mybookings"} className="px-3 py-1 relative after:absolute after:bottom-0 after:left-2 after:w-0 after:h-[1.5px] after:bg-primary after:transition-all after:duration-200 after:ease-in hover:after:w-full">
+              <Link
+                href={"/dashboard/mybookings"}
+                className="px-3 py-1 relative after:absolute after:bottom-0 after:left-2 after:w-0 after:h-[1.5px] after:bg-primary after:transition-all after:duration-200 after:ease-in hover:after:w-full"
+              >
                 Bookings
               </Link>
             </li>
             <li>
-              <Link href={"/dashboard/listing"} className="px-3 py-1 relative after:absolute after:bottom-0 after:left-2 after:w-0 after:h-[1.5px] after:bg-primary after:transition-all after:duration-200 after:ease-in hover:after:w-full">
+              <Link
+                href={"/dashboard/myrentals"}
+                className="px-3 py-1 relative after:absolute after:bottom-0 after:left-2 after:w-0 after:h-[1.5px] after:bg-primary after:transition-all after:duration-200 after:ease-in hover:after:w-full"
+              >
                 Rentals
               </Link>
             </li>
@@ -108,7 +117,10 @@ const Navbar = () => {
             </div>
 
             <Link href="/listing/new">
-              <CtaButton text="List your item" className="hover:opacity-90 transition-opacity duration-100 ease-in" />
+              <CtaButton
+                text="List your item"
+                className="hover:opacity-90 transition-opacity duration-100 ease-in"
+              />
             </Link>
           </div>
         </nav>
@@ -126,7 +138,7 @@ const Navbar = () => {
         </Link>
 
         <div
-          className="h-4 relative  border-red-600"
+          className="h-4 relative border-red-600"
           onClick={() => setisMobileMenuOpened((prev) => !prev)}
         >
           <button
@@ -174,7 +186,11 @@ const Navbar = () => {
             </Link>
           </li>
           <li className="py-3 border-b-2 border-primary-200/50 hover:bg-primary-100">
-            <Link href="#" className="flex items-center justify-between">
+            <Link
+              href="/dashboard/myrentals"
+              className="flex items-center justify-between"
+              onClick={() => setisMobileMenuOpened(false)}
+            >
               <span className="text-[19px]">My rentals</span>
               <ChevronRight size={22} />
             </Link>
