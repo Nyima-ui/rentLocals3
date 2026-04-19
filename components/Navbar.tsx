@@ -57,7 +57,7 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link href={"/dashboard/listing"} className="px-3 py-1">
+              <Link href={"/dashboard/mybookings"} className="px-3 py-1">
                 Bookings
               </Link>
             </li>

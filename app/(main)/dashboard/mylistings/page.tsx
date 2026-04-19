@@ -4,6 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchUserListings } from "@/lib/action";
 import { redirect } from "next/navigation";
 import Footer from "@/components/Footer";
+import Image from "next/image";
+import CtaButton from "@/components/CtaButton";
+import Link from "next/link";
 
 const MyListings = async () => {
   const supabase = await createClient();
@@ -18,8 +21,31 @@ const MyListings = async () => {
   return (
     <div className="px-[80px] max-lg:px-[40px] max-sm:px-[20px]">
       <BackButton classname="mt-7 max-md:mt-20" />
-      <h1 className="text-[27px] mt-6">My listings</h1>
-      <MylistingsGrid listings={userListings} />
+      {userListings.length > 0 ? (
+        <>
+          <h1 className="text-[27px] mt-6">My listings</h1>
+          <MylistingsGrid listings={userListings} />
+        </>
+      ) : (
+        <div className="h-[80vh] flex items-center justify-center">
+          <div className="flex flex-col items-center">
+            <Image
+              height={84}
+              width={78}
+              alt="Note illustration"
+              src={"/note.svg"}
+            />
+            <h1 className="font-syne text-[27px]">No listings yet</h1>
+            <p className="max-w-[384px] text-center leading-tight text-text/60 text-sm mt-2">
+              You haven&apos;t created any listings. Share something you own and
+              start earning today.
+            </p>
+            <Link href="/listing/new">
+              <CtaButton text="List Your First Item" className="mt-4" />
+            </Link>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );
