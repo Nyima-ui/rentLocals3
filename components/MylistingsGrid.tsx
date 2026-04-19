@@ -83,9 +83,9 @@ export const DeletePopUp = ({
 export const MyListingCard = ({ listing }: { listing: Listing }) => {
   const [isDeletePopUp, setIsDeletePopUp] = useState(false);
   return (
-    <article className="bg-primary-100 rounded-md p-2">
+    <article className="bg-primary-100 rounded-md p-2 hover:shadow-sm hover:shadow-primary-200">
       <Link href={`/listing/${listing.id}`}>
-        <div className="overflow-hidden h-[234px] rounded-[2.5px] w-full">
+        <div className="overflow-hidden h-58.5 max-sm:h-[270px] rounded-[2.5px] w-full">
           <Image
             height={244}
             width={244}
@@ -112,7 +112,7 @@ export const MyListingCard = ({ listing }: { listing: Listing }) => {
           onClick={() => setIsDeletePopUp(true)}
         />
         <Link href={`/listing/${listing.id}/edit`} className="w-1/2">
-          <CtaButton text="Edit" className="py-2 w-full bg-primary-300 text-text" />
+          <CtaButton text="Edit" className="py-2 w-full bg-primary-200 hover:bg-primary-200/50 text-text transition-colors duration-100 ease-in" />
         </Link>
       </footer>
 

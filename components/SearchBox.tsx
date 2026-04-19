@@ -132,7 +132,7 @@ const SearchBox = () => {
           </div>
           <button
             type="submit"
-            className="cursor-pointer bg-primary h-full p-[12px] rounded-tr-md rounded-br-md"
+            className="cursor-pointer bg-primary h-full p-3 rounded-tr-md rounded-br-md hover:opacity-90 transition-opacity duration-100 ease-in"
           >
             <Search color="#fff5f0" strokeWidth={3} />
           </button>
