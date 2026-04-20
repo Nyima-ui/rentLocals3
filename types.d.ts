@@ -49,6 +49,11 @@ interface HyggloListing {
   location: {
     street?: string;
     label: string;
+    municipality?: string;
+    bestLocation?: {
+      name: string;
+      parentName: string;
+    };
   };
 }
 interface ListingPrices {
@@ -60,7 +65,7 @@ interface ParsedHyggloListing {
   title: string;
   description: string;
   category: string;
-  location: string;
+  location: string | null;
   prices: ListingPrices;
   pictures: string[];
 }

@@ -11,11 +11,21 @@ function pickRandom<T>(arr: T[]): T {
 }
 
 function parseHyggloListing(listing: HyggloListing): ParsedHyggloListing {
+  const loc = listing.location;
+  const best = loc.bestLocation;
+
+  const location = best
+    ? `${best.name}, ${best.parentName}`
+    : loc.label
+      ? loc.label
+      : loc.municipality
+        ? loc.municipality
+        : null;
   return {
     title: listing.product.name,
     description: listing.product.description,
     category: listing.product.category.name,
-    location: listing.location.street || listing.location.label,
+    location,
     prices: {
       day: parseFloat(
         listing.product.prices
