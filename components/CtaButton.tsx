@@ -14,7 +14,7 @@ const CtaButton = ({
   return (
     <button
       className={cn(
-        `bg-primary px-[15px] py-[10px] rounded-md cursor-pointer text-sm font-medium text-bg-main flex items-center justify-center gap-3`,
+        `bg-primary px-3.75 py-2.5 rounded-md cursor-pointer text-sm font-medium text-bg-main flex items-center justify-center gap-3`,
         loading && "bg-primary-400 cursor-not-allowed border-primary border",
         className, disabled && "bg-primary-400"
       )}

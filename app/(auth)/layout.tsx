@@ -1,19 +1,6 @@
 import type { Metadata } from "next";
-import { Syne, Instrument_Sans } from "next/font/google";
 import "./style.css";
 import AuthProvider from "@/context/AuthProvider";
-
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const instrumentSans = Instrument_Sans({
-  variable: "--font-instrument-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export const metadata: Metadata = {
   title: "Rent Locals",
@@ -21,19 +8,10 @@ export const metadata: Metadata = {
     "Rent what you need, earn from what you own. RentLocals connects neighbors in the Greater Toronto Area to share cameras, tools, party gear, and more.",
 };
 
-export default function RootLayout({
+export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html
-      lang="en"
-      className={`${syne.variable} ${instrumentSans.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <AuthProvider>{children}</AuthProvider>
-      </body>
-    </html>
-  );
+  return <AuthProvider>{children}</AuthProvider>;
 }
