@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { X } from "lucide-react";
 import { ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const POPULAR_SEARCHES = [
   "Party lights",
@@ -23,6 +24,7 @@ const SearchBox = () => {
   const [showSuggestion, setShowSuggestion] = useState(false);
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
   const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -101,12 +103,17 @@ const SearchBox = () => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // const handleSearch = (title: string, id: string) => {
+  //   setQuery(title);
+  //   router.push(`/listing/${id}`);
+  // };
+
   return (
     <>
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="mx-auto max-w-[628px] mt-[32px] rounded-md shadow-search focus-within:outline-primary-300 focus-within:outline-2 relative z-10"
+        className="mx-auto max-w-157 mt-8 rounded-md shadow-search focus-within:outline-primary-300 focus-within:outline-2 relative z-10"
       >
         <div className="flex items-center bg-primary-100 hover:bg-primary-100/70">
           <div className="flex-1">
@@ -116,7 +123,7 @@ const SearchBox = () => {
             <input
               type="text"
               id="search-query"
-              className="p-[12px] max-sm:p-[10px] w-full focus:outline-none"
+              className="p-3 max-sm:p-2.5 w-full focus:outline-none"
               placeholder="Eg. Party lights"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -127,6 +134,7 @@ const SearchBox = () => {
                   setIsMobileSearchOpen(true);
                 }
               }}
+              autoComplete="off"
               onBlur={() => setIsInputFocused(false)}
             />
           </div>
@@ -140,16 +148,16 @@ const SearchBox = () => {
 
         {showSuggestion && results.length > 0 && (
           <div className="absolute top-full left-0 text-text bg-primary-100 w-[calc(100%-48px)] shadow-sm shadow-primary-200 rounded-md translate-y-1.5">
-            <p className="font-medium mt-[16px] pl-[16px]">Top matches</p>
-            <ul className="mt-[10px]">
+            <p className="font-medium mt-4 pl-4">Top matches</p>
+            <ul className="mt-2.5">
               {results.map((result) => (
                 <li
                   key={result.id}
-                  className="pl-[48px] bg-transparent hover:bg-primary-200"
+                  className="pl-12 bg-transparent hover:bg-primary-200"
                   onClick={() => setQuery(result.title)}
                   tabIndex={-1}
                 >
-                  <Link href="/" className="py-[10px] block">
+                  <Link href={`/listing/${result.id}`} className="py-2.5 block">
                     {result.title}
                   </Link>
                 </li>
@@ -160,7 +168,7 @@ const SearchBox = () => {
       </form>
       {/* MOBILE SEARCH BOX  */}
       {isMobileSearchOpen && (
-        <div className="fixed bg-bg-main top-0 right-0 z-40 w-full h-screen px-[20px] pt-[48px] hidden max-md:flex max-md:flex-col">
+        <div className="fixed bg-bg-main top-0 right-0 z-40 w-full h-screen px-5 pt-12 hidden max-md:flex max-md:flex-col">
           <form className="relative focus-within:outline-2 focus-within:outline-primary rounded-md shadow-sm shadow-primary-200">
             <label htmlFor="mobile-search-query" className="sr-only">
               Search query for smaller devices
@@ -174,9 +182,10 @@ const SearchBox = () => {
               ref={mobileInputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              autoComplete="off"
             />
             <button
-              className="absolute top-[8px] right-1 p-1 cursor-pointer hover:bg-primary-200 rounded-md"
+              className="absolute top-2 right-1 p-1 cursor-pointer hover:bg-primary-200 rounded-md"
               type="button"
               onClick={() => setIsMobileSearchOpen(false)}
             >
@@ -187,21 +196,24 @@ const SearchBox = () => {
           {query ? (
             results.length > 0 && (
               <div
-                className="bg-primary-100 mt-[8px] rounded-md p-3 shadow-sm shadow-primary-200"
+                className="bg-primary-100 mt-2 rounded-md p-3 shadow-sm shadow-primary-200"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Search"
               >
                 <p className="font-medium text-[19px]">Top matches</p>
-                <ul className="mt-[20px]">
+                <ul className="mt-5">
                   {results.map((result) => (
                     <li
                       key={result.id}
                       className="rounded-[2.5px] flex items-center justify-between hover:bg-primary-200"
-                      onClick={() => setQuery(result.title)}
+                      onClick={() => {
+                        setQuery(result.title);
+                        setIsMobileSearchOpen(false);
+                      }}
                     >
                       <Link
-                        href="/"
+                        href={`/listing/${result.id}`}
                         className="py-3 pl-5 block rounded-md w-full text-lg whitespace-nowrap line-clamp-1"
                       >
                         {result.title}
@@ -216,13 +228,13 @@ const SearchBox = () => {
             )
           ) : (
             <div
-              className="bg-primary-100 mt-[8px] rounded-md p-3 shadow-sm shadow-primary-200"
+              className="bg-primary-100 mt-2 rounded-md p-3 shadow-sm shadow-primary-200"
               role="dialog"
               aria-modal="true"
               aria-label="Search"
             >
               <p className="font-medium text-[19px]">Popular searches</p>
-              <ul className="mt-[20px]">
+              <ul className="mt-5">
                 {POPULAR_SEARCHES.map((search) => (
                   <li
                     key={search}

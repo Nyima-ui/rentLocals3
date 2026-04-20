@@ -6,7 +6,7 @@ const Footer = ({ classname }: { classname?: string }) => {
   return (
     <footer
       className={cn(
-        `mt-[132px] mb-[54px] border-t pt-[15px] border-primary-200`,
+        `mt-[132px] pb-[54px] border-t pt-[15px] border-primary-200`,
         classname,
       )}
     >

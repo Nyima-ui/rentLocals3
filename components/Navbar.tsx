@@ -199,7 +199,6 @@ const Navbar = () => {
           <button
             className={cn(`block w-6.25 h-4 cursor-pointer
            after:content-[''] after:absolute after:top-full after:h-0 after:border-b-3 after:border-text after:w-full after:left-0 after:right-0 after:transition-all after:ease-out after:duration-300 after:rounded-md ${isMobileMenuOpened && `after:-rotate-45 afer:origin-center after:top-1/2`}
-           
            before:content-[''] before:absolute before:top-0 before:h-0 before:border-b-3 before:border-text before:w-full beforer:left-0 before:right-0 before:transition-all before:ease-out before:duration-300 before:rounded-md ${isMobileMenuOpened && `before:rotate-45 before:origin-center before:top-1/2`}`)}
           >
             <i
@@ -210,6 +209,14 @@ const Navbar = () => {
               Menu
             </i>
           </button>
+          {bookingRequests > 0 && (
+            <span className="absolute -top-2 -right-2 flex size-4 rounded-full">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 backdrop-opacity-85"></span>
+              <span className="rounded-full w-full h-full text-[12px] flex items-center justify-center bg-primary text-white leading-tight">
+                {bookingRequests}
+              </span>
+            </span>
+          )}
         </div>
       </nav>
 
@@ -240,7 +247,7 @@ const Navbar = () => {
               <ChevronRight size={22} />
             </Link>
           </li>
-          <li className="py-3 border-b-2 border-primary-200/50 hover:bg-primary-100">
+          <li className="py-3 border-b-2 border-primary-200/50 hover:bg-primary-100 relative">
             <Link
               href="/dashboard/myrentals"
               className="flex items-center justify-between"
@@ -248,6 +255,14 @@ const Navbar = () => {
             >
               <span className="text-[19px]">My rentals</span>
               <ChevronRight size={22} />
+              {bookingRequests > 0 && (
+                <span className="absolute top-4.5 right-8 flex size-4 rounded-full">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 backdrop-opacity-85"></span>
+                  <span className="rounded-full w-full h-full text-[12px] flex items-center justify-center bg-primary text-white leading-tight">
+                    {bookingRequests}
+                  </span>
+                </span>
+              )}
             </Link>
           </li>
           {/* <li className="py-3 border-b-2 border-primary-200/50 hover:bg-primary-100">
