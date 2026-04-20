@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 const Navbar = () => {
   const [isDropDownOpened, setisDropDownOpened] = useState(false);
   const [isMobileMenuOpened, setisMobileMenuOpened] = useState(false);
+  const [bookingRequests, setBookingRequests] = useState(0);
   const { user, profile } = useAuth();
   const router = useRouter();
 
@@ -29,6 +30,52 @@ const Navbar = () => {
       document.body.classList.remove("overflow-hidden");
     }
   }, [isMobileMenuOpened]);
+
+  const checkBookingRequests = async () => {
+    try {
+      const supabase = createClient();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("booking")
+        .select("*")
+        .eq("owner_id", user.id)
+        .eq("status", "pending");
+
+      if (error) throw error;
+
+      setBookingRequests(data.length);
+    } catch (error) {
+      console.error(`Error checking booking requests, ${error}`);
+    }
+  };
+
+  useEffect(() => {
+    const supabase = createClient();
+    if (!user) return;
+
+    checkBookingRequests();
+
+    const channel = supabase
+      .channel(`booking-requests-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "booking",
+          filter: `owner_id=eq.${user.id}`,
+        },
+        () => {
+          checkBookingRequests();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   return (
     <>
@@ -57,7 +104,7 @@ const Navbar = () => {
                 Listings
               </Link>
             </li>
-            <li>
+            <li className="relative">
               <Link
                 href={"/dashboard/mybookings"}
                 className="px-3 py-1 relative after:absolute after:bottom-0 after:left-2 after:w-0 after:h-[1.5px] after:bg-primary after:transition-all after:duration-200 after:ease-in hover:after:w-full"
@@ -65,13 +112,21 @@ const Navbar = () => {
                 Bookings
               </Link>
             </li>
-            <li>
+            <li className="relative">
               <Link
                 href={"/dashboard/myrentals"}
                 className="px-3 py-1 relative after:absolute after:bottom-0 after:left-2 after:w-0 after:h-[1.5px] after:bg-primary after:transition-all after:duration-200 after:ease-in hover:after:w-full"
               >
                 Rentals
               </Link>
+              {bookingRequests > 0 && (
+                <span className="absolute -top-1 -right-1 flex size-4 rounded-full">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 backdrop-opacity-85"></span>
+                  <span className="rounded-full w-full h-full text-[12px] flex items-center justify-center bg-primary text-white leading-tight">
+                    {bookingRequests}
+                  </span>
+                </span>
+              )}
             </li>
           </ul>
 

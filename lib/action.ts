@@ -451,3 +451,4 @@ export const fetchUserRentalsAction = async (
 
   return booking;
 };
+

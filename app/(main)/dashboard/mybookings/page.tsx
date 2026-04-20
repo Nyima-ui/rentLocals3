@@ -51,6 +51,7 @@ const MyBookings = async () => {
                     width={45}
                     alt={booking.owner.fullname}
                     src={booking.owner.avatar}
+                    className="rounded-full"
                   />
                 </div>
                 <div className="flex-1">
