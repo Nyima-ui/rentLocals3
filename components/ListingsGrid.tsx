@@ -7,6 +7,7 @@ import {
   fetchTotalNumberOfHomeListingsAction,
 } from "@/lib/action";
 import { useSearchParams } from "next/navigation";
+import CardLoader from "./skeletonLoaders/cardLoader/CardLoader";
 
 const PAGE_SIZE = 10;
 
@@ -62,6 +63,16 @@ const ListingsGrid = ({
     };
     loadCategory();
   }, [category]);
+
+  if (loading) {
+    return (
+      <ul className="grid grid-cols-5 gap-x-3.75 gap-y-6 max-xl:grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1 mt-8">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <CardLoader key={i} />
+        ))}
+      </ul>
+    );
+  }
 
   return (
     <section className="mt-8">
