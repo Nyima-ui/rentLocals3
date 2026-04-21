@@ -1,0 +1,52 @@
+.cardLoader {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-radius: 8px;
+  background-color: #f5f0ee;
+  margin-top: 45px;
+  padding: 15px;
+  max-width: 250px;
+
+  border: 1px solid black;
+}
+
+.box1,
+.box2,
+.box3 {
+  background-color: #e8e0dd;
+  border-radius: 8px;
+}
+
+.box1 {
+  height: 27px;
+}
+
+.box2,
+.box3 {
+  height: 54px;
+}
+
+.cardLoader::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 100%
+  );
+  animation: animloader 1s linear infinite;
+}
+
+@keyframes animloader {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}

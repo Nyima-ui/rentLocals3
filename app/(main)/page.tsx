@@ -2,8 +2,18 @@ import Category from "@/components/Category";
 import Footer from "@/components/Footer";
 import ListingsGrid from "@/components/ListingsGrid";
 import SearchBox from "@/components/SearchBox";
+import { Suspense } from "react";
+import {
+  fetchCategoriesAction,
+  fetchHomeListingsAction,
+  fetchTotalNumberOfHomeListingsAction,
+} from "@/lib/action";
 
-export default function Home() {
+export default async function Home() {
+  const initialListings = await fetchHomeListingsAction(0, 10);
+  const totalListings = await fetchTotalNumberOfHomeListingsAction();
+  const categories = await fetchCategoriesAction();
+
   return (
     <main className="px-[80px] max-lg:px-[40px] max-sm:px-[20px]">
       <section
@@ -16,8 +26,10 @@ export default function Home() {
       </section>
 
       <SearchBox />
-      <Category />
-      <ListingsGrid />
+      <Suspense>
+        <Category categories={categories} />
+        <ListingsGrid initialListings={initialListings} total={totalListings} />
+      </Suspense>
       <Footer />
     </main>
   );

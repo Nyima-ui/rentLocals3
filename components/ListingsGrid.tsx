@@ -1,9 +1,68 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchHomeListingsAction } from "@/lib/action";
+import { useEffect, useState } from "react";
+import {
+  fetchHomeListingsAction,
+  fetchTotalNumberOfHomeListingsAction,
+} from "@/lib/action";
+import { useSearchParams } from "next/navigation";
 
-const ListingsGrid = async () => {
-  const listings = await fetchHomeListingsAction();
+const PAGE_SIZE = 10;
+
+const ListingsGrid = ({
+  initialListings,
+  total,
+}: {
+  initialListings: Listing[];
+  total: number;
+}) => {
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category") ?? undefined;
+
+  const [listings, setListings] = useState<Listing[]>(initialListings);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(listings.length !== total);
+
+  const handleShowMore = async () => {
+    try {
+      setLoading(true);
+      const nextPage = page + 1;
+      const newListings = await fetchHomeListingsAction(nextPage, PAGE_SIZE);
+      setListings((prev) => {
+        const updated = [...prev, ...newListings];
+        setHasMore(updated.length !== total);
+        return updated;
+      });
+      setPage(nextPage);
+    } catch (error) {
+      console.error(`Error showing more listings ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadCategory = async () => {
+      setLoading(true);
+      try {
+        const [newListings, newTotal] = await Promise.all([
+          fetchHomeListingsAction(0, PAGE_SIZE, category),
+          fetchTotalNumberOfHomeListingsAction(category),
+        ]);
+        setListings(newListings);
+        setPage(0);
+        setHasMore(newListings.length !== newTotal);
+      } catch (error) {
+        console.error(`Error fetching listings based on category ${error}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCategory();
+  }, [category]);
+
   return (
     <section className="mt-8">
       <ul className="grid grid-cols-5 gap-x-3.75 gap-y-6 max-xl:grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
@@ -37,9 +96,15 @@ const ListingsGrid = async () => {
         ))}
       </ul>
 
-      <button className="mx-auto block mt-15 cursor-pointer bg-primary-100 rounded-md px-3.75 py-2.5 shadow-primary-200 text-sm font-medium hover:shadow-sm transition-shadow duration-150 ease-in">
-        Show more
-      </button>
+      {hasMore && (
+        <button
+          onClick={handleShowMore}
+          className="mx-auto block mt-15 cursor-pointer bg-primary-100 rounded-md px-3.75 py-2.5 shadow-primary-200 text-sm font-medium hover:shadow-sm transition-shadow duration-150 ease-in"
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Show more"}
+        </button>
+      )}
     </section>
   );
 };

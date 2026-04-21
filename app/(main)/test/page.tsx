@@ -1,9 +1,9 @@
-import React from 'react'
+import CardLoader from "@/components/skeletonLoaders/cardLoader/cardLoader"
 
 const page = () => {
   return (
     <div>
-      asdf
+      <CardLoader />
     </div>
   )
 }

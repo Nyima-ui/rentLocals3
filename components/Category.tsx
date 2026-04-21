@@ -1,6 +1,8 @@
 "use client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const seedCategories = [
   "All categories",
@@ -14,10 +16,26 @@ const seedCategories = [
   "Laptops",
 ];
 
-const Category = () => {
+const Category = ({ categories }: { categories: string[] }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeCategory = searchParams.get("category") ?? "all categories";
+
   const scrollRef = useRef<HTMLUListElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const handleCategoryClick = (cat: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (cat === "all categories") {
+      params.delete("category");
+    } else {
+      params.set("category", cat);
+    }
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  const allCategories = ["all categories", ...categories];
 
   const checkScroll = () => {
     const el = scrollRef.current;
@@ -50,7 +68,6 @@ const Category = () => {
         className="max-w-[1211px] flex items-center justify-between mx-auto mt-[112px] overflow-x-auto gap-[24px] scrollbar-hide"
         ref={scrollRef}
       >
-
         {canScrollLeft && (
           <button
             className="cursor-pointer absolute top-[2px] left-0 bg-bg-main z-10  rounded-md p-0.5"
@@ -61,13 +78,20 @@ const Category = () => {
           </button>
         )}
 
-        {seedCategories.map((catx) => (
+        {allCategories.map((catx) => (
           <li key={catx}>
-            <button className="cursor-pointer font-medium hover:opacity-75 transition-opacity duration-150 border border-primary-100 rounded-md px-[8px] py-[3px] text-sm whitespace-nowrap">
-              {catx}
+            <button
+              className={cn(
+                `cursor-pointer font-medium hover:opacity-75 transition-opacity duration-150 border border-primary-100 rounded-md px-[8px] py-[3px] text-sm whitespace-nowrap`,
+                activeCategory === catx && "bg-primary-100",
+              )}
+              onClick={() => handleCategoryClick(catx)}
+            >
+              {catx.charAt(0).toUpperCase() + catx.slice(1)}
             </button>
           </li>
         ))}
+
         {canScrollRight && (
           <button
             className="cursor-pointer absolute top-[2px] right-0 bg-bg-main z-10 rounded-md p-0.5"

@@ -1,14 +1,43 @@
 "use server";
 import { createClient } from "./supabase/server";
 
-export const fetchHomeListingsAction = async (): Promise<Listing[]> => {
+export const fetchHomeListingsAction = async (
+  page: number = 0,
+  pageSize: number = 10,
+  category?: string,
+): Promise<Listing[]> => {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.from("listings").select("*");
+  const from = page * pageSize;
+  const to = from + pageSize - 1;
 
+  let query = supabase.from("listings").select("*").range(from, to);
+
+  if (category) {
+    query = query.ilike("category", category);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
-
   return data;
+};
+
+export const fetchTotalNumberOfHomeListingsAction = async (
+  category?: string,
+): Promise<number> => {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("listings")
+    .select("*", { count: "exact", head: true });
+
+  if (category) {
+    query = query.ilike("category", category);
+  }
+
+  const { count, error } = await query;
+  if (error) throw error;
+  return count ?? 0;
 };
 
 const uploadImageToStorage = async (
@@ -452,3 +481,16 @@ export const fetchUserRentalsAction = async (
   return booking;
 };
 
+export const fetchCategoriesAction = async () => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.from("listings").select("category");
+
+  if (error) throw error;
+
+  const uniqueCategories = [
+    ...new Set(data.map((item) => item.category?.trim().toLowerCase())),
+  ].filter(Boolean);
+
+  return uniqueCategories;
+};
