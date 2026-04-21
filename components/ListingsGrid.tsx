@@ -2,12 +2,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import CardLoader from "./skeletonLoaders/cardLoader/CardLoader";
+import { useRef } from "react";
 import {
   fetchHomeListingsAction,
   fetchTotalNumberOfHomeListingsAction,
 } from "@/lib/action";
-import { useSearchParams } from "next/navigation";
-import CardLoader from "./skeletonLoaders/cardLoader/CardLoader";
 
 const PAGE_SIZE = 10;
 
@@ -20,15 +21,16 @@ const ListingsGrid = ({
 }) => {
   const searchParams = useSearchParams();
   const category = searchParams.get("category") ?? undefined;
-
+  const isFirstRender = useRef(true);
   const [listings, setListings] = useState<Listing[]>(initialListings);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [moreListingsLoading, setMoreListingsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(listings.length !== total);
 
   const handleShowMore = async () => {
     try {
-      setLoading(true);
+      setMoreListingsLoading(true);
       const nextPage = page + 1;
       const newListings = await fetchHomeListingsAction(nextPage, PAGE_SIZE);
       setListings((prev) => {
@@ -40,11 +42,16 @@ const ListingsGrid = ({
     } catch (error) {
       console.error(`Error showing more listings ${error}`);
     } finally {
-      setLoading(false);
+      setMoreListingsLoading(false);
     }
   };
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     const loadCategory = async () => {
       setLoading(true);
       try {
@@ -105,6 +112,8 @@ const ListingsGrid = ({
             </Link>
           </li>
         ))}
+        {moreListingsLoading &&
+          Array.from({ length: 5 }).map((_, i) => <CardLoader key={i} />)}
       </ul>
 
       {hasMore && (
