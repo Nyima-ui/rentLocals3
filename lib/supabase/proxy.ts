@@ -46,14 +46,12 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  const isPublicRoute =
-    pathname === "/" ||
-    pathname.startsWith("/signup") ||
-    pathname.startsWith("/api/seed/listing") ||
-    pathname.startsWith("/auth/callback") ||
-    (pathname.startsWith("/listing/") && pathname !== "/listing/new");
+const isProtectedRoute =
+  pathname.startsWith("/dashboard") ||
+  pathname.startsWith("/listing/new") ||
+  pathname.startsWith("/booking");
 
-  if (!user && !isPublicRoute) {
+  if (!user && isProtectedRoute) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/signup";
