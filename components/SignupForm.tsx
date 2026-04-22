@@ -84,7 +84,7 @@ const SignupForm = () => {
 
         if (profileError) throw profileError;
 
-        router.push("/");
+        window.location.href = "/"
         router.refresh();
       } catch (error) {
         if (
@@ -114,7 +114,7 @@ const SignupForm = () => {
           password,
         });
         if (error) throw error;
-        router.push("/");
+        window.location.href = "/"
         router.refresh();
       } catch (error) {
         if (
