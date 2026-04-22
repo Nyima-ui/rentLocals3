@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import CtaButton from "./CtaButton";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -13,6 +13,7 @@ const Navbar = () => {
   const [isDropDownOpened, setisDropDownOpened] = useState(false);
   const [isMobileMenuOpened, setisMobileMenuOpened] = useState(false);
   const [bookingRequests, setBookingRequests] = useState(0);
+  const desktopDropdownRef = useRef<HTMLDivElement>(null);
   const { user, profile } = useAuth();
   const router = useRouter();
 
@@ -77,6 +78,19 @@ const Navbar = () => {
     };
   }, [user]);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        desktopDropdownRef.current &&
+        !desktopDropdownRef.current.contains(e.target as Node)
+      ) {
+        setisDropDownOpened(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   return (
     <>
       <header className="shadow-nav relative">
@@ -131,12 +145,15 @@ const Navbar = () => {
           </ul>
 
           <div className="flex items-center gap-6">
-            <div className="relative">
+            <div className="relative" ref={desktopDropdownRef}>
               {profile?.avatar ? (
                 <button
                   className="rounded-full overflow-hidden size-10 cursor-pointer"
                   aria-label="View profile"
-                  onClick={() => setisDropDownOpened((prev) => !prev)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setisDropDownOpened((prev) => !prev);
+                  }}
                   aria-expanded={isDropDownOpened}
                   aria-haspopup="true"
                 >
@@ -154,10 +171,12 @@ const Navbar = () => {
                 </Link>
               )}
 
+              {/*DESKTOP DROPDOWN  */}
               {isDropDownOpened && (
                 <ul className="absolute top-full right-0 w-28.75 bg-primary-100 py-2 rounded-md shadow-sm shadow-primary-400/70  translate-y-2 z-10">
                   <li className="px-2 hover:bg-primary-200">
                     <Link href="/">Profile</Link>
+                    <span className="text-[8px]">(Developing)</span>
                   </li>
                   <li className="px-2 cursor-pointer mt-1">
                     <button

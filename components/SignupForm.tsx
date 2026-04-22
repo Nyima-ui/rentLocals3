@@ -85,6 +85,7 @@ const SignupForm = () => {
         if (profileError) throw profileError;
 
         router.push("/");
+        router.refresh();
       } catch (error) {
         if (
           error instanceof Error &&
@@ -114,6 +115,7 @@ const SignupForm = () => {
         });
         if (error) throw error;
         router.push("/");
+        router.refresh();
       } catch (error) {
         if (
           error instanceof Error &&
