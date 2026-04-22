@@ -328,8 +328,8 @@ export const renterCancelAction = async (booking: Booking) => {
 
   await chatAction({
     booking_id: booking.id,
-    sender_id: booking.owner_id,
-    receiver_id: booking.renter_id,
+    sender_id: booking.renter_id,
+    receiver_id: booking.owner_id,
     listing_id: booking.listing_id,
     message: "booking_cancelled",
     type: "system",
