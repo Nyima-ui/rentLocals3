@@ -26,9 +26,9 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
           );
-          Object.entries(headers).forEach(([key, value]) =>
-            supabaseResponse.headers.set(key, value),
-          );
+          // Object.entries(headers).forEach(([key, value]) =>
+          //   supabaseResponse.headers.set(key, value),
+          // );
         },
       },
     },
@@ -46,10 +46,10 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-const isProtectedRoute =
-  pathname.startsWith("/dashboard") ||
-  pathname.startsWith("/listing/new") ||
-  pathname.startsWith("/booking");
+  const isProtectedRoute =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/listing/new") ||
+    pathname.startsWith("/booking");
 
   if (!user && isProtectedRoute) {
     // no user, potentially respond by redirecting the user to the login page
