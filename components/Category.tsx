@@ -58,7 +58,7 @@ const Category = ({ categories }: { categories: string[] }) => {
 
   const scroll = (dir: "left" | "right") => {
     scrollRef.current?.scrollBy({
-      left: dir === "left" ? -200 : 200,
+      left: dir === "left" ? -300 : 300,
       behavior: "smooth",
     });
   };

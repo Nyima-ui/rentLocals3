@@ -19,7 +19,7 @@ const MyListings = async () => {
   const userListings = await fetchUserListings(user.id);
 
   return (
-    <div className="px-[80px] max-lg:px-[40px] max-sm:px-[20px]">
+    <div className="px-20 max-lg:px-10 max-sm:px-5">
       <BackButton classname="mt-7 max-md:mt-20" />
       {userListings.length > 0 ? (
         <>

@@ -7,10 +7,11 @@ import { calculatePrice, formatDate, toLocaleDateString } from "@/lib/utils";
 import { useAuth } from "@/context/AuthProvider";
 import { useRouter } from "next/navigation";
 import { requestBookingAction } from "@/lib/action";
+import CalendarLoader from "./skeletonLoaders/CalendarLoader";
 
 const ShadCnCalendar = dynamic(
   () => import("./ui/calendar").then((mod) => mod.Calendar),
-  { ssr: false },
+  { ssr: false, loading: () => <CalendarLoader /> },
 );
 
 const Calendar = ({ listing }: { listing: Listing }) => {
@@ -104,7 +105,9 @@ const Calendar = ({ listing }: { listing: Listing }) => {
           </span>
         </div>
         {isOwner ? (
-          <p className="mt-3 text-sm text-primary font-medium">You can&apos;t book your own listing.</p>
+          <p className="mt-3 text-sm text-primary font-medium">
+            You can&apos;t book your own listing.
+          </p>
         ) : (
           <CtaButton
             text="Request Booking"

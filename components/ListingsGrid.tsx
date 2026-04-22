@@ -71,6 +71,10 @@ const ListingsGrid = ({
     loadCategory();
   }, [category]);
 
+  useEffect(() => {
+    console.log("loading", loading);
+  }, [loading]);
+
   if (loading) {
     return (
       <ul className="grid grid-cols-5 gap-x-3.75 gap-y-6 max-xl:grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1 mt-8">

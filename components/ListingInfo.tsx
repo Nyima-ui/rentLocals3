@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthProvider";
 
 const ListingInfo = ({ listing }: { listing: SingleListing }) => {
   const [previewImage, setPreviewImage] = useState(listing.pictures[0]);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const { user } = useAuth();
 
   const isOwner = listing?.owner_id === user?.id;
@@ -13,20 +14,32 @@ const ListingInfo = ({ listing }: { listing: SingleListing }) => {
     <div className="flex-1">
       {/* IMAGES  */}
       <div>
-        <div className="">
+        <div className="relative">
+          {!imageLoaded && (
+            <div className="absolute inset-0 size-full cardLoader bg-primary-100/50 rounded-md overflow-hidden"></div>
+          )}
+
           <Image
             width={737}
             height={552}
             src={previewImage}
             alt={listing.title}
-            className="rounded-md w-full h-full object-cover"
+            className={`rounded-md w-full h-full object-cover ${imageLoaded ? "opacity-100" : "opacity-0"}`}
             loading="eager"
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageLoaded(true)}
           />
         </div>
         {listing.pictures.length > 0 && (
           <div className="flex justify-end gap-3 mt-3">
             {listing.pictures.map((img) => (
-              <button key={img} onClick={() => setPreviewImage(img)}>
+              <button
+                key={img}
+                onClick={() => {
+                  setPreviewImage(img);
+                  setImageLoaded(false);
+                }}
+              >
                 <Image
                   width={80}
                   height={80}
@@ -42,7 +55,7 @@ const ListingInfo = ({ listing }: { listing: SingleListing }) => {
       {/* OWNER INFO  */}
       <h2 className="mt-6 font-semibold uppercase text-sm">owned by</h2>
       <article className="mt-3 rounded-md border border-primary-200 px-3 py-2 relative">
-        <div className="">
+        <div>
           <div className="absolute top-2 left-3 w-[calc(100%-24px)] bg-primary-100 h-[48px] rounded-t-md"></div>
           <div className="relative z-10 translate-y-3 translate-x-2">
             {listing.owner?.avatar && (
