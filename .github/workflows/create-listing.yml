@@ -1,0 +1,24 @@
+name: Daily Listing Scraper
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # Runs every day at 9:00 AM UTC
+  workflow_dispatch:       # Allows manual triggering from GitHub UI
+
+jobs:
+  ping-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Listing API
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET "https://rent-locals3.vercel.app/api/seed/listing" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}")
+
+          echo "Response status: $response"
+
+          if [ "$response" -ne 200 ]; then
+            echo "API call failed with status $response"
+            exit 1
+          fi
