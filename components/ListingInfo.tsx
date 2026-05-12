@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthProvider";
 
 const ListingInfo = ({ listing }: { listing: SingleListing }) => {
   const [previewImage, setPreviewImage] = useState(listing.pictures[0]);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState<string | null>(null);
   const { user } = useAuth();
 
   const isOwner = listing?.owner_id === user?.id;
@@ -15,7 +15,7 @@ const ListingInfo = ({ listing }: { listing: SingleListing }) => {
       {/* IMAGES  */}
       <div>
         <div className="relative">
-          {!imageLoaded && (
+          {imageLoaded !== previewImage && (
             <div className="absolute inset-0 size-full cardLoader bg-primary-100/50 rounded-md overflow-hidden"></div>
           )}
 
@@ -24,10 +24,10 @@ const ListingInfo = ({ listing }: { listing: SingleListing }) => {
             height={552}
             src={previewImage}
             alt={listing.title}
-            className={`rounded-md w-full h-full object-cover ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+            className={`rounded-md w-full h-full object-cover ${imageLoaded === previewImage ? "opacity-100" : "opacity-0"}`}
             loading="eager"
-            onLoad={() => setImageLoaded(true)}
-            onError={() => setImageLoaded(true)}
+            onLoad={() => setImageLoaded(previewImage)}
+            onError={() => setImageLoaded(previewImage)}
           />
         </div>
         {listing.pictures.length > 0 && (
@@ -37,7 +37,6 @@ const ListingInfo = ({ listing }: { listing: SingleListing }) => {
                 key={img}
                 onClick={() => {
                   setPreviewImage(img);
-                  setImageLoaded(false);
                 }}
               >
                 <Image
